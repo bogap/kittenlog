@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>770</width>
+    <height>203</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>add title</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(241, 231, 255);</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_3">
+    <item row="0" column="0">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QPushButton" name="back">
+            <property name="styleSheet">
+             <string notr="true">QPushButton{
+	background-color: rgb(230, 208, 255);
+	border-radius: 15px;
+	padding: 5px;
+    width: 20px;
+    height: 20px;
+}
+QPushButton:hover{
+	background-color: rgb(157, 0, 255);
+}</string>
+            </property>
+            <property name="text">
+             <string>&lt;-</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string> название:  </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="vvodtext">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 255);</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>введите отзыв:     </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPlainTextEdit" name="otzyv">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 255);</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item row="0" column="1">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="r2">
+            <property name="styleSheet">
+             <string notr="true">QRadioButton{
+	background-color: rgb(241, 231, 255);
+	border-radius: 10px;
+	padding: 5px;
+    width: 70px;
+    height: 15px;
+}
+QRadioButton:hover{
+	background-color: rgb(255, 148, 218);
+}</string>
+            </property>
+            <property name="text">
+             <string>книга</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="r1">
+            <property name="styleSheet">
+             <string notr="true">QRadioButton{
+	background-color: rgb(241, 231, 255);
+	border-radius: 10px;
+	padding: 5px;
+    width: 70px;
+    height: 15px;
+}
+QRadioButton:hover{
+	background-color: rgb(255, 148, 218);
+}</string>
+            </property>
+            <property name="text">
+             <string>фильм</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QRadioButton" name="r8">
+            <property name="styleSheet">
+             <string notr="true">QRadioButton{
+	background-color: rgb(241, 231, 255);
+	border-radius: 10px;
+	padding: 5px;
+    width: 70px;
+    height: 15px;
+}
+QRadioButton:hover{
+	background-color: rgb(255, 148, 218);
+}</string>
+            </property>
+            <property name="text">
+             <string>комикс</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QRadioButton" name="r9">
+            <property name="styleSheet">
+             <string notr="true">QRadioButton{
+	background-color: rgb(241, 231, 255);
+	border-radius: 10px;
+	padding: 5px;
+    width: 70px;
+    height: 15px;
+}
+QRadioButton:hover{
+	background-color: rgb(255, 148, 218);
+}</string>
+            </property>
+            <property name="text">
+             <string>мультфильм</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="r4">
+            <property name="styleSheet">
+             <string notr="true">QRadioButton{
+	background-color: rgb(241, 231, 255);
+	border-radius: 10px;
+	padding: 5px;
+    width: 70px;
+    height: 15px;
+}
+QRadioButton:hover{
+	background-color: rgb(255, 148, 218);
+}</string>
+            </property>
+            <property name="text">
+             <string>аниме</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QRadioButton" name="r6">
+            <property name="styleSheet">
+             <string notr="true">QRadioButton{
+	background-color: rgb(241, 231, 255);
+	border-radius: 10px;
+	padding: 5px;
+    width: 70px;
+    height: 15px;
+}
+QRadioButton:hover{
+	background-color: rgb(255, 148, 218);
+}</string>
+            </property>
+            <property name="text">
+             <string>маньхуа</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QRadioButton" name="r7">
+            <property name="styleSheet">
+             <string notr="true">QRadioButton{
+	background-color: rgb(241, 231, 255);
+	border-radius: 10px;
+	padding: 5px;
+    width: 70px;
+    height: 15px;
+}
+QRadioButton:hover{
+	background-color: rgb(255, 148, 218);
+}</string>
+            </property>
+            <property name="text">
+             <string>сериал</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QRadioButton" name="r3">
+            <property name="styleSheet">
+             <string notr="true">QRadioButton{
+	background-color: rgb(241, 231, 255);
+	border-radius: 10px;
+	padding: 5px;
+    width: 70px;
+    height: 15px;
+}
+QRadioButton:hover{
+	background-color: rgb(255, 148, 218);
+}</string>
+            </property>
+            <property name="text">
+             <string>манхва</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QRadioButton" name="r5">
+            <property name="styleSheet">
+             <string notr="true">QRadioButton{
+	background-color: rgb(241, 231, 255);
+	border-radius: 10px;
+	padding: 5px;
+    width: 70px;
+    height: 15px;
+}
+QRadioButton:hover{
+	background-color: rgb(255, 148, 218);
+}</string>
+            </property>
+            <property name="text">
+             <string>манга</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>  оценнка:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="ocenka">
+            <property name="styleSheet">
+             <string notr="true">QSpinBox{
+	background-color: rgb(230, 208, 255);
+	border-radius: 10px;
+	padding: 5px;
+    width: 20px;
+    height: 15px;
+}
+QSpinBox:hover{
+	background-color: rgb(157, 0, 255);
+}</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>/10          </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>введите статус:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="statusbox">
+            <property name="styleSheet">
+             <string notr="true">QComboBox{
+	background-color: rgb(230, 208, 255);
+	border-radius: 10px;
+	padding: 5px;
+    width: 80px;
+    height: 15px;
+}
+QComboBox:hover{
+	background-color: rgb(157, 0, 255);
+}</string>
+            </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToContents</enum>
+            </property>
+            <item>
+             <property name="text">
+              <string>буду смотреть</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>смотрю</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>просмотрено</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>буду читать</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>читаю</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>прочитано</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnadd">
+              <property name="styleSheet">
+               <string notr="true">QPushButton{
+	background-color: rgb(230, 208, 255);
+	border-radius: 10px;
+	padding: 5px;
+    width: 60px;
+    height: 15px;
+}
+QPushButton:hover{
+	background-color: rgb(157, 0, 255);
+}</string>
+              </property>
+              <property name="text">
+               <string>добавить</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
