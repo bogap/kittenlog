@@ -17,21 +17,6 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
     def __init__(self):
         super().__init__()
         self.initialize()
-
-        # QApplication.installEventFilter(self)
-        def mousePressEvent(self, event):
-            if event.key() == Qt.Key_Plus:
-                self.newWindow()
-                return True
-            elif event.key() == Qt.Key_Escape:
-                self.close()
-            elif event.key() == Qt.Key_Equal:
-                self.listWindow()
-                return True
-            elif event.key() == (Qt.Key_Control and Qt.Key_Z):
-                self.oldWindow()
-                return True
-
         self.swimmingButtons()
 
     def initialize(self):  # инициализация

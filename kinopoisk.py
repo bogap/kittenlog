@@ -14,12 +14,13 @@ with open('token.txt') as token_file:
 film_id = "1143242"
 
 # Формируем путь для задания запроса
-"""url="https://api.kinopoisk.dev/v1.3/movie?page=1&limit=10&id=1143242"
+"""url="https://api.kinopoisk.dev/v1.3/movie/1143242"
 url = "https://api.kinopoisk.dev/v1.3/movie?&limit=10&id={}/token/{}".format(
     film_id,
     token
 )"""
 
+#
 
 def get_movie_info(movie_title):
     url = f"https://api.kinopoisk.cloud/movies?keyword={movie_title}&fields=id,name,year,countries,genres,description"
