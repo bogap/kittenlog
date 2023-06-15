@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox, QStatusBar, 
 from PyQt6.QtWidgets import QApplication
 from a1 import Ui_MainWindow
 from a2 import Ui_PlusWindow
-from a3 import Ui_EqWindow
+from a3 import Ui_EqWindow, Ui_EqWindow
 from PyQt6 import uic
 import sqlite3
 import sys
@@ -103,8 +103,8 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
                                    "    background-color: rgb(157, 0, 255);\n"
                                    "}")
             picbt.setFixedSize(225, 320)
-            reductbt.setText('редактировать')
-            removebt.setText('удалить')
+            reductbt.setText('edit')
+            removebt.setText('delete')
             a = list([str(j) for j in self.res[i]])
             putin = list([str(j) for j in self.puti[i]])
             if putin[1] != '':
@@ -119,7 +119,7 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
             removebt.clicked.connect(self.udalit)
             self.text = QPlainTextEdit(self)
             self.nazv.append(a[0])
-            pola = ['название', 'статус', 'тип', 'прогресс', 'оценка', 'отзыв']
+            pola = ['title', 'status', 'type', 'progress', 'rating', 'review']
             for k in range(6):
                 self.text.appendPlainText(f'{pola[k]}: {a[k]}')
             self.text.setReadOnly(True)
@@ -142,8 +142,8 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
             if self.removebtns[k] == self.sender():
                 nam = self.nazv[k]
         cur = self.connection.cursor()
-        cur.execute("""DELETE from titles where название = ?""", (nam,))
-        cur.execute("""DELETE from pictures where название = ?""", (nam,))
+        cur.execute("""DELETE from titles where title = ?""", (nam,))
+        cur.execute("""DELETE from pictures where title = ?""", (nam,))
         self.connection.commit()
         self.loadsubd()
         self.oldWindow()
@@ -172,8 +172,8 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
             if el[0] == self.reductObj:
                 self.putreduct = el[1]
         cur = self.connection.cursor()
-        cur.execute("""DELETE from titles where название = ?""", (self.reductObj,))
-        cur.execute("""DELETE from pictures where название = ?""", (self.reductObj,))
+        cur.execute("""DELETE from titles where title = ?""", (self.reductObj,))
+        cur.execute("""DELETE from pictures where title = ?""", (self.reductObj,))
         self.connection.commit()
         self.loadsubd()
         self.btnadd.clicked.connect(self.save)
@@ -182,12 +182,12 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
         for k in self.btns.keys():
             if self.btns[k] == self.sender():
                 fname = QFileDialog.getOpenFileName(
-                    self, 'Выбрать картинку', '',
-                    'Картинка (*.jpg);;Картинка (*.jpg);;Все файлы (*)')[0]
+                    self, 'Select a picture', '',
+                    'Picture (*.jpg);;Picture (*.jpg);;All files (*)')[0]
                 cur = self.connection.cursor()
                 cur.execute("""UPDATE pictures
-                                SET путь = ?
-                                WHERE название= ?""", (fname, self.nazv[k]))
+                                SET path = ?
+                                WHERE title= ?""", (fname, self.nazv[k]))
                 self.connection.commit()
                 self.btns[k].setStyleSheet(f'background-image : url({fname});')
                 self.loadsubd()
@@ -200,7 +200,7 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
 
     def closeEvent(self, event):  # спрашивает точно выйти
         close = QMessageBox()
-        close.setText('уверены что хотите выйти?')
+        close.setText('are you sure you want to exit?')
         close.setWindowTitle(' ')
         close.setWindowIcon(QtGui.QIcon('imgs/krug'))
         close.setStandardButtons(QMessageBox.StandardButton.Close | QMessageBox.StandardButton.Yes)
@@ -247,19 +247,19 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
         if self.name == '' or not vybr:
             msg = QMessageBox()
             msg.setWindowIcon(QtGui.QIcon('imgs/krug'))
-            msg.setText("вы не ввели данные")
-            msg.setWindowTitle("ошибка")
-            msg.setDetailedText("нужно обязательно ввести название и тип")
+            msg.setText("you have not entered the data")
+            msg.setWindowTitle("error")
+            msg.setDetailedText("please, enter a title and type")
             msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
             msg.exec_()
             return
-        if self.type in ['аниме', 'сериал', 'фильм', 'мультфильм']:
-            self.message = 'серий просмотрено:'
-        elif self.type in ['манга', 'комикс', 'манхва', 'маньхуа']:
-            self.message = 'глав прочитано:'
-        elif self.type == 'книга':
-            self.message = 'страниц прочитано:'
-        self.progress, ok_pressed = QInputDialog.getText(self, "прогресс",
+        if self.type in ['аnime', 'series', 'movie', 'cartoon film']:
+            self.message = 'number of episodes viewed:'
+        elif self.type in ['manga', 'comic book', 'manhwa', 'manhua']:
+            self.message = 'number of chapters read:'
+        elif self.type == 'book':
+            self.message = 'number of pages read:'
+        self.progress, ok_pressed = QInputDialog.getText(self, "progress",
                                                          self.message)
         self.ocenk = self.ocenka.text()
         self.otzv = self.otzyv.toPlainText()
@@ -269,12 +269,12 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
 
     def updatesubd(self):  # изменение информации в бд
         cur = self.connection.cursor()
-        cur.execute("""INSERT INTO titles(название, статус, тип, прогресс, оценка, отзыв) VALUES(?,?,?,?,?,?)""",
+        cur.execute("""INSERT INTO titles(title, status, type, progress, rating, review) VALUES(?,?,?,?,?,?)""",
                     (self.name, self.status, self.type, self.progress, self.ocenk, self.otzv))
         try:
-            cur.execute("""INSERT INTO pictures(название,путь) VALUES(?,?)""", (self.name, self.putreduct))
+            cur.execute("""INSERT INTO pictures(title,path) VALUES(?,?)""", (self.name, self.putreduct))
         except:
-            cur.execute("""INSERT INTO pictures(название,путь) VALUES(?,?)""", (self.name, ''))
+            cur.execute("""INSERT INTO pictures(title,path) VALUES(?,?)""", (self.name, ''))
         self.connection.commit()
 
 
@@ -304,7 +304,8 @@ class Window3(Main, Ui_EqWindow):  # класс окна списка с раз�
         grid = QGridLayout(self)
         tab = QTabWidget(self)
         tab.adjustSize()
-        statuslist = ['просмотрено', 'смотрю', 'буду смотреть', 'прочитано', 'читаю', 'буду читать']
+        statuslist = ['already watched', 'currently watching', 'add in watchlist',
+                      'already read', 'currently reading', 'add in readlist']
         maxwidth = 0
         for i in range(6):
             content = QScrollArea(self)
@@ -316,8 +317,8 @@ class Window3(Main, Ui_EqWindow):  # класс окна списка с раз�
                 a = list([str(j) for j in el])
                 if el[1] == statuslist[i]:
                     txt = '\n'.join(i.upper() for i in
-                                    [f'название: {a[0]}', f'статус: {a[1]}', f'тип: {a[2]}', f'прогресс: {a[3]}',
-                                     f'оценка: {a[4]}', f'отзыв: {a[5]}'])
+                                    [f'title: {a[0]}', f'status: {a[1]}', f'type: {a[2]}', f'progress: {a[3]}',
+                                     f'rating: {a[4]}', f'review: {a[5]}'])
                     title = QPlainTextEdit(txt, self)
                     title.setStyleSheet('background-color: rgba(241, 231, 255, 50);')
                     title.setFixedWidth(self.width())
