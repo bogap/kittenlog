@@ -20,6 +20,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Class Constructor.
         """
         super().__init__()
+        self.window_size = [7, 30, 700, 700]
         self.redact_obj = None
         self.titles = None
         self.remove_buttons = None
@@ -38,10 +39,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         super().__init__()
         self.setupUi(self)
-        f = open('../size1.txt')
-        a = [int(i) for i in f.read().split(' ')]
-        f.close()
-        self.setGeometry(*a)
+        self.setGeometry(*self.window_size)
         self.setWindowIcon(QtGui.QIcon('imgs/krug'))
         self.setStyleSheet('background-color: rgb(241, 231, 255);')
         self.connect_to_db()
@@ -229,7 +227,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.open_main_window()
 
     def connect_to_db(self):  # метод для подключения к бд
-        self.connection = sqlite3.connect('../titles.db')
+        self.connection = sqlite3.connect('titles.db')
         self.res = self.connection.cursor().execute("""SELECT * FROM titles""").fetchall()
         self.puti = self.connection.cursor().execute("""SELECT * FROM pictures""").fetchall()
 
@@ -246,21 +244,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             event.ignore()
 
     def open_window_to_add_media_content(self):  # открытие окна ввода информации
-        self.a = [self.x(), self.y() + 30, self.width(), self.height()]
-        f = open('../size1.txt', 'w')
-        a = ' '.join([str(i) for i in self.a])
-        f.write(a)
-        f.close()
+        self.window_size = [self.x(), self.y() + 30, self.width(), self.height()]
         self.w = InputWindow()
         self.w.show()
         self.hide()
 
     def open_window_with_tabs(self):  # открытие окна списка с разделами
-        self.a = [self.x(), self.y() + 30, self.width(), self.height()]
-        f = open('../size1.txt', 'w')
-        a = ' '.join([str(i) for i in self.a])
-        f.write(a)
-        f.close()
+        self.window_size = [self.x(), self.y() + 30, self.width(), self.height()]
         self.w = MovieSectionWindow()
         self.w.show()
         self.hide()
