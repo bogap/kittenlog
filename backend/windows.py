@@ -38,7 +38,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         super().__init__()
         self.setupUi(self)
-        f = open('size1.txt')
+        f = open('../size1.txt')
         a = [int(i) for i in f.read().split(' ')]
         f.close()
         self.setGeometry(*a)
@@ -178,7 +178,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Method for list redaction
         :return: None
         """
-        path = os.path.join('UI', 'a2.ui')
+        path = os.path.join('../UI', 'a2.ui')
         uic.loadUi(path, self)
         # uic.loadUi('UI/a2.ui', self)
         for k in self.redact_buttons.keys():
@@ -229,7 +229,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.open_main_window()
 
     def connect_to_db(self):  # метод для подключения к бд
-        self.connection = sqlite3.connect('titles.db')
+        self.connection = sqlite3.connect('../titles.db')
         self.res = self.connection.cursor().execute("""SELECT * FROM titles""").fetchall()
         self.puti = self.connection.cursor().execute("""SELECT * FROM pictures""").fetchall()
 
@@ -247,7 +247,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def open_window_to_add_media_content(self):  # открытие окна ввода информации
         self.a = [self.x(), self.y() + 30, self.width(), self.height()]
-        f = open('size1.txt', 'w')
+        f = open('../size1.txt', 'w')
         a = ' '.join([str(i) for i in self.a])
         f.write(a)
         f.close()
@@ -257,7 +257,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def open_window_with_tabs(self):  # открытие окна списка с разделами
         self.a = [self.x(), self.y() + 30, self.width(), self.height()]
-        f = open('size1.txt', 'w')
+        f = open('../size1.txt', 'w')
         a = ' '.join([str(i) for i in self.a])
         f.write(a)
         f.close()
