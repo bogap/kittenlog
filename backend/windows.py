@@ -245,19 +245,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def open_window_to_add_media_content(self):  # открытие окна ввода информации
         self.window_size = [self.x(), self.y() + 30, self.width(), self.height()]
-        self.w = InputWindow()
-        self.w.show()
+        InputWindow().show()
         self.hide()
 
     def open_window_with_tabs(self):  # открытие окна списка с разделами
         self.window_size = [self.x(), self.y() + 30, self.width(), self.height()]
-        self.w = MovieSectionWindow()
-        self.w.show()
+        MovieSectionWindow().show()
         self.hide()
 
     def open_main_window(self):  # открытие главного окна
-        self.w = MainWindow()
-        self.w.show()
+        MainWindow().show()
         self.hide()
 
     def save_info(self):  # сохранение введенной информации в переменных
