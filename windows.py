@@ -1,3 +1,4 @@
+import os
 import sqlite3
 from PIL import Image
 from PyQt6 import uic, QtGui
@@ -19,6 +20,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Class Constructor.
         """
         super().__init__()
+        self.redact_obj = None
+        self.titles = None
+        self.remove_buttons = None
+        self.redact_buttons = None
         self.buttons = None
         self.sb = QStatusBar(self)
         self.eq_btn = QPushButton(self)
@@ -137,15 +142,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pic_btn.clicked.connect(self.select_picture)
             redact_btn.clicked.connect(self.edit_list)
             remove_btn.clicked.connect(self.remove_from_list)
-            self.text = QPlainTextEdit(self)
+            text = QPlainTextEdit(self)
             self.titles.append(a[0])
             fields = ['title', 'status', 'type', 'progress', 'rating', 'review']
             for k in range(6):
-                self.text.appendPlainText(f'{fields[k]}: {a[k]}')
-            self.text.setReadOnly(True)
-            self.text.setStyleSheet('background-color: rgb(241, 231, 255);')
+                text.appendPlainText(f'{fields[k]}: {a[k]}')
+            text.setReadOnly(True)
+            text.setStyleSheet('background-color: rgb(241, 231, 255);')
             layout.addWidget(pic_btn, i, 3)
-            layout.addWidget(self.text, i, 2)
+            layout.addWidget(text, i, 2)
             grid = QGridLayout()
             wid = QWidget()
             wid.setLayout(grid)
@@ -173,7 +178,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Method for list redaction
         :return: None
         """
-        uic.loadUi('a2.ui', self)
+        path = os.path.join('UI', 'a2.ui')
+        uic.loadUi(path, self)
+        # uic.loadUi('UI/a2.ui', self)
         for k in self.redact_buttons.keys():
             if self.redact_buttons[k] == self.sender():
                 self.redact_obj = self.titles[k]
@@ -301,7 +308,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     (self.name, self.status, self.type, self.progress, self.ocenk, self.otzv))
         try:
             cur.execute("""INSERT INTO pictures(title,путь) VALUES(?,?)""", (self.name, self.putreduct))
-        except:
+        except Exception:
             cur.execute("""INSERT INTO pictures(title,путь) VALUES(?,?)""", (self.name, ''))
         self.connection.commit()
 
@@ -318,7 +325,7 @@ class InputWindow(MainWindow, Ui_PlusWindow, Ui_MainWindow):  # класс ок�
 
             else:
                 self.btnadd.clicked.connect(self.save_editing)
-        except:
+        except Exception:
             self.btnadd.clicked.connect(self.save_info)
 
 
