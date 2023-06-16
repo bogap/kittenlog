@@ -4,22 +4,31 @@ from PyQt6.QtCore import Qt, QEvent
 from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton
 from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit
 from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox, QStatusBar, QTabWidget
-from PyQt6.QtWidgets import QApplication
 from a1 import Ui_MainWindow
 from a2 import Ui_PlusWindow
-from a3 import Ui_EqWindow, Ui_EqWindow
+from a3 import Ui_EqWindow
 from PyQt6 import uic
 import sqlite3
 import sys
 
 
-class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
+class Main(QMainWindow, Ui_MainWindow):
+    """
+    This is class for main window
+    """
     def __init__(self):
+        """
+        Class Constructor.
+        """
         super().__init__()
-        self.initialize()
-        self.swimmingButtons()
+        self.set_window()
+        self.set_swimming_buttons()
 
-    def initialize(self):  # инициализация
+    def set_window(self):  # инициализация
+        """
+        Method sets the window parameters such as window size, background color, and widgets.
+        :return: None
+        """
         super().__init__()
         self.setupUi(self)
         f = open('size1.txt')
@@ -28,12 +37,12 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
         self.setGeometry(*a)
         self.setWindowIcon(QtGui.QIcon('imgs/krug'))
         self.setStyleSheet('background-color: rgb(241, 231, 255);')
-        self.loadsubd()
-        self.kartinkiknopochki()
+        self.connect_to_db()
+        self.display_widgets_buttons()
 
-    def swimmingButtons(self):  # метод для кнопок для перехода в два побочных окна
+    def set_swimming_buttons(self):  # метод для кнопок для перехода в два побочных окна
         self.plusbtn = QPushButton(self)
-        self.plusbtn.clicked.connect(self.newWindow)
+        self.plusbtn.clicked.connect(self.open_window_to_add_media_content)
         self.plusbtn.setStyleSheet("QPushButton{\n"
                                    "    background-color: rgb(201, 164, 255);\n"
                                    "    border-radius: 13px;\n"
@@ -45,7 +54,7 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
         self.plusbtn.setText('+')
         self.plusbtn.setFixedSize(40, 40)
         self.eqbtn = QPushButton(self)
-        self.eqbtn.clicked.connect(self.listWindow)
+        self.eqbtn.clicked.connect(self.open_window_with_tabs)
         self.eqbtn.setStyleSheet("QPushButton{\n"
                                  "    background-color: rgb(201, 164, 255);\n"
                                  "    border-radius: 13px;\n"
@@ -56,9 +65,9 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
                                  "}")
         self.eqbtn.setText('=')
         self.eqbtn.setFixedSize(40, 40)
-        self.conteiner()
+        self.container()
 
-    def conteiner(self):  # метод для котейнера этих кнопок в статусбаре
+    def container(self):  # метод для котейнера этих кнопок в статусбаре
         self.sb = QStatusBar(self)
         self.sb.setStyleSheet('background-color: rgba(0, 0, 0,0);')
         self.sb.move(10, 10)
@@ -66,7 +75,7 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
         self.sb.addWidget(self.eqbtn)
         self.sb.setFixedSize(100, 40)
 
-    def kartinkiknopochki(self):  # метод для отображения картинок, кнопок и информации
+    def display_widgets_buttons(self):  # метод для отображения картинок, кнопок и информации
         scr = QScrollArea(self)
         scr.setWidgetResizable(True)
         pnl = QWidget(self)
@@ -114,9 +123,9 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
                 picbt.setStyleSheet(f'background-image : url({putin[1]});')
             else:
                 picbt.setStyleSheet(f'background-image : url(imgs/umol.jpg);')
-            picbt.clicked.connect(self.vybratkartinku)
-            reductbt.clicked.connect(self.reductirovat)
-            removebt.clicked.connect(self.udalit)
+            picbt.clicked.connect(self.select_picture)
+            reductbt.clicked.connect(self.edit_list)
+            removebt.clicked.connect(self.remove_from_list)
             self.text = QPlainTextEdit(self)
             self.nazv.append(a[0])
             pola = ['title', 'status', 'type', 'progress', 'rating', 'review']
@@ -137,26 +146,26 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
         scr.setWidget(pnl)
         self.setCentralWidget(scr)
 
-    def udalit(self):  # метод для удаления из списка
+    def remove_from_list(self):  # метод для удаления из списка
         for k in self.removebtns.keys():
             if self.removebtns[k] == self.sender():
                 nam = self.nazv[k]
         cur = self.connection.cursor()
-        cur.execute("""DELETE from titles where title = ?""", (nam,))
-        cur.execute("""DELETE from pictures where title = ?""", (nam,))
+        cur.execute("""DELETE from titles where название = ?""", (nam,))
+        cur.execute("""DELETE from pictures where название = ?""", (nam,))
         self.connection.commit()
-        self.loadsubd()
-        self.oldWindow()
+        self.connect_to_db()
+        self.open_main_window()
 
-    def reductirovat(self):  # метод для редактирования в списке
+    def edit_list(self):  # метод для редактирования в списке
         uic.loadUi('a2.ui', self)
         for k in self.reductbtns.keys():
             if self.reductbtns[k] == self.sender():
                 self.reductObj = self.nazv[k]
                 self.back.hide()
-                self.saveReduct()
+                self.save_editing()
 
-    def saveReduct(self):  # метод для сохранения отредактированного
+    def save_editing(self):  # метод для сохранения отредактированного
         self.vvodtext.setText(self.reductObj)
         btnsarr = [self.r1, self.r2, self.r3, self.r4, self.r5, self.r6, self.r7, self.r8, self.r9]
         for el in self.res:
@@ -172,13 +181,13 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
             if el[0] == self.reductObj:
                 self.putreduct = el[1]
         cur = self.connection.cursor()
-        cur.execute("""DELETE from titles where title = ?""", (self.reductObj,))
-        cur.execute("""DELETE from pictures where title = ?""", (self.reductObj,))
+        cur.execute("""DELETE from titles where название = ?""", (self.reductObj,))
+        cur.execute("""DELETE from pictures where название = ?""", (self.reductObj,))
         self.connection.commit()
-        self.loadsubd()
-        self.btnadd.clicked.connect(self.save)
+        self.connect_to_db()
+        self.btnadd.clicked.connect(self.save_info)
 
-    def vybratkartinku(self):  # метод для выбора картинки при нажатии на имгбаттон
+    def select_picture(self):  # метод для выбора картинки при нажатии на имгбаттон
         for k in self.btns.keys():
             if self.btns[k] == self.sender():
                 fname = QFileDialog.getOpenFileName(
@@ -186,14 +195,14 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
                     'Picture (*.jpg);;Picture (*.jpg);;All files (*)')[0]
                 cur = self.connection.cursor()
                 cur.execute("""UPDATE pictures
-                                SET path = ?
-                                WHERE title= ?""", (fname, self.nazv[k]))
+                                SET путь = ?
+                                WHERE название= ?""", (fname, self.nazv[k]))
                 self.connection.commit()
                 self.btns[k].setStyleSheet(f'background-image : url({fname});')
-                self.loadsubd()
-                self.oldWindow()
+                self.connect_to_db()
+                self.open_main_window()
 
-    def loadsubd(self):  # метод для подключения к бд
+    def connect_to_db(self):  # метод для подключения к бд
         self.connection = sqlite3.connect('titles.db')
         self.res = self.connection.cursor().execute("""SELECT * FROM titles""").fetchall()
         self.puti = self.connection.cursor().execute("""SELECT * FROM pictures""").fetchall()
@@ -210,7 +219,7 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
         else:
             event.ignore()
 
-    def newWindow(self):  # открытие окна ввода информации
+    def open_window_to_add_media_content(self):  # открытие окна ввода информации
         self.a = [self.x(), self.y() + 30, self.width(), self.height()]
         f = open('size1.txt', 'w')
         a = ' '.join([str(i) for i in self.a])
@@ -220,7 +229,7 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
         self.w.show()
         self.hide()
 
-    def listWindow(self):  # открытие окна списка с разделами
+    def open_window_with_tabs(self):  # открытие окна списка с разделами
         self.a = [self.x(), self.y() + 30, self.width(), self.height()]
         f = open('size1.txt', 'w')
         a = ' '.join([str(i) for i in self.a])
@@ -230,12 +239,12 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
         self.w.show()
         self.hide()
 
-    def oldWindow(self):  # открытие главного окна
+    def open_main_window(self):  # открытие главного окна
         self.w = Main()
         self.w.show()
         self.hide()
 
-    def save(self):  # сохранение введенной информации в переменных
+    def save_info(self):  # сохранение введенной информации в переменных
         self.name = self.vvodtext.text()
         self.status = self.statusbox.currentText()
         vybr = False
@@ -264,17 +273,17 @@ class Main(QMainWindow, Ui_MainWindow):  # класс главного окна
         self.ocenk = self.ocenka.text()
         self.otzv = self.otzyv.toPlainText()
         if ok_pressed:
-            self.updatesubd()
-        self.oldWindow()
+            self.update_db()
+        self.open_main_window()
 
-    def updatesubd(self):  # изменение информации в бд
+    def update_db(self):  # изменение информации в бд
         cur = self.connection.cursor()
-        cur.execute("""INSERT INTO titles(title, status, type, progress, rating, review) VALUES(?,?,?,?,?,?)""",
+        cur.execute("""INSERT INTO titles(название, статус, тип, прогресс, оценка, отзыв) VALUES(?,?,?,?,?,?)""",
                     (self.name, self.status, self.type, self.progress, self.ocenk, self.otzv))
         try:
-            cur.execute("""INSERT INTO pictures(title,path) VALUES(?,?)""", (self.name, self.putreduct))
+            cur.execute("""INSERT INTO pictures(название,путь) VALUES(?,?)""", (self.name, self.putreduct))
         except:
-            cur.execute("""INSERT INTO pictures(title,path) VALUES(?,?)""", (self.name, ''))
+            cur.execute("""INSERT INTO pictures(название,путь) VALUES(?,?)""", (self.name, ''))
         self.connection.commit()
 
 
@@ -285,13 +294,13 @@ class Window2(Main, Ui_PlusWindow, Ui_MainWindow):  # класс окна вво
         self.ocenka.setMaximum(10)
         try:
             if self.sender().text() == '+':
-                self.back.clicked.connect(self.oldWindow)
-                self.btnadd.clicked.connect(self.save)
+                self.back.clicked.connect(self.open_main_window)
+                self.btnadd.clicked.connect(self.save_info)
 
             else:
-                self.btnadd.clicked.connect(self.saveReduct)
+                self.btnadd.clicked.connect(self.save_editing)
         except:
-            self.btnadd.clicked.connect(self.save)
+            self.btnadd.clicked.connect(self.save_info)
 
 
 class Window3(Main, Ui_EqWindow):  # класс окна списка с разделами
@@ -335,7 +344,7 @@ class Window3(Main, Ui_EqWindow):  # класс окна списка с раз�
             self.setMinimumWidth(maxwidth + 30)
         backbtn = QPushButton()
         backbtn.setText('<-')
-        backbtn.clicked.connect(self.oldWindow)
+        backbtn.clicked.connect(self.open_main_window)
         backbtn.setStyleSheet("QPushButton{\n"
                               "    background-color: rgb(230, 208, 255);\n"
                               "    border-radius: 15px;\n"
