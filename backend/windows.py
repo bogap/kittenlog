@@ -33,6 +33,9 @@ class MainWindow(QMainWindow, UiMainWindow):
         self.review = None
         self.back = None
         self.add_button = None
+        self.connection = None
+        self.picture_titles = None
+        self.paths_to_pictures = None
         self.status_bar = QStatusBar(self)
         self.equal_button = QPushButton(self)
         self.plus_button = QPushButton(self)
@@ -112,14 +115,14 @@ class MainWindow(QMainWindow, UiMainWindow):
         scr.setWidgetResizable(True)
         pnl = QWidget(self)
         layout = QGridLayout(self)
-        self.buttons = {i: QPushButton(self) for i in range(len(self.res))}
-        self.edit_buttons = {i: QPushButton(self) for i in range(len(self.res))}
-        self.remove_buttons = {i: QPushButton(self) for i in range(len(self.res))}
+        self.buttons = {i: QPushButton(self) for i in range(len(self.picture_titles))}
+        self.edit_buttons = {i: QPushButton(self) for i in range(len(self.picture_titles))}
+        self.remove_buttons = {i: QPushButton(self) for i in range(len(self.picture_titles))}
         self.titles = []
 
-        self.res.reverse()
-        self.puti.reverse()
-        for i in range(len(self.res)):
+        self.picture_titles.reverse()
+        self.paths_to_pictures.reverse()
+        for i in range(len(self.picture_titles)):
             pic_button = self.buttons[i]
             edit_button = self.edit_buttons[i]
             remove_button = self.remove_buttons[i]
@@ -146,8 +149,8 @@ class MainWindow(QMainWindow, UiMainWindow):
             pic_button.setFixedSize(225, 320)
             edit_button.setText('edit')
             remove_button.setText('delete')
-            a = list([str(j) for j in self.res[i]])
-            putin = list([str(j) for j in self.puti[i]])
+            a = list([str(j) for j in self.picture_titles[i]])
+            putin = list([str(j) for j in self.paths_to_pictures[i]])
             if putin[1] != '':
                 im = Image.open(putin[1])
                 im2 = im.resize((225, 320))
@@ -220,7 +223,7 @@ class MainWindow(QMainWindow, UiMainWindow):
 
         self.enter_text.setText(self.edit_obj)
         array_of_buttons = [self.r1, self.r2, self.r3, self.r4, self.r5, self.r6, self.r7, self.r8, self.r9]
-        for item in self.res:
+        for item in self.picture_titles:
             if item[0] == self.edit_obj:
                 self.rating.setMaximum(10)
                 self.rating.setValue(item[4])
@@ -229,7 +232,7 @@ class MainWindow(QMainWindow, UiMainWindow):
                 for but in array_of_buttons:
                     if but.text() == item[2]:
                         but.setChecked(True)
-        for item in self.puti:
+        for item in self.paths_to_pictures:
             if item[0] == self.edit_obj:
                 self.putreduct = item[1]
         cur = self.connection.cursor()
@@ -269,8 +272,8 @@ class MainWindow(QMainWindow, UiMainWindow):
         """
 
         self.connection = sqlite3.connect('titles.db')
-        self.res = self.connection.cursor().execute("""SELECT * FROM titles""").fetchall()
-        self.puti = self.connection.cursor().execute("""SELECT * FROM pictures""").fetchall()
+        self.picture_titles = self.connection.cursor().execute("""SELECT * FROM titles""").fetchall()
+        self.paths_to_pictures = self.connection.cursor().execute("""SELECT * FROM pictures""").fetchall()
 
     def closeEvent(self, event):
         """
@@ -314,11 +317,23 @@ class MainWindow(QMainWindow, UiMainWindow):
         TabsWindow().show()
         self.hide()
 
-    def open_main_window(self):  # открытие главного окна
+    def open_main_window(self):
+        """
+        Method opens the main window
+
+        :return: None
+        """
+
         MainWindow().show()
         self.hide()
 
-    def save_info(self):  # сохранение введенной информации в переменных
+    def save_info(self):
+        """
+        Method saves information entered in input window.
+
+        :return: None
+        """
+
         self.name = self.enter_text.text()
         self.status = self.status_box.currentText()
         checked = False
@@ -334,7 +349,7 @@ class MainWindow(QMainWindow, UiMainWindow):
             msg.setWindowTitle("error")
             msg.setDetailedText("please, enter a title and type")
             msg.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
-            msg.exec_()
+            msg.exec()
             return
         if self.type in ['аnime', 'series', 'movie', 'cartoon film']:
             self.message = 'number of episodes viewed:'
@@ -350,7 +365,13 @@ class MainWindow(QMainWindow, UiMainWindow):
             self.update_db()
         self.open_main_window()
 
-    def update_db(self):  # изменение информации в бд
+    def update_db(self):
+        """
+        Method updates information in database if it was changed.
+
+        :return: None
+        """
+
         cur = self.connection.cursor()
         cur.execute("""INSERT INTO titles(название, статус, тип, прогресс, оценка, отзыв) VALUES(?,?,?,?,?,?)""",
                     (self.name, self.status, self.type, self.progress, self.ocenk, self.otzv))
@@ -361,8 +382,16 @@ class MainWindow(QMainWindow, UiMainWindow):
         self.connection.commit()
 
 
-class InputWindow(MainWindow, UiInputWindow, UiMainWindow):  # класс окна ввода
+class InputWindow(MainWindow, UiInputWindow, UiMainWindow):
+    """
+    Class for input window.
+    """
+
     def __init__(self):
+        """
+        Constructor sets parameters of input window and describes a window items behavior.
+        """
+
         super().__init__()
         self.setup_ui(self)
         self.rating.setMaximum(10)
@@ -377,13 +406,27 @@ class InputWindow(MainWindow, UiInputWindow, UiMainWindow):  # класс окн
             self.add_button.clicked.connect(self.save_info)
 
 
-class TabsWindow(MainWindow, UiTabsWindow):  # класс окна списка с разделами
+class TabsWindow(MainWindow, UiTabsWindow):
+    """
+    Class for tabs window.
+    """
+
     def __init__(self):
+        """
+        Constructor sets parameters of tabs window and fills tabs.
+        """
+
         super().__init__()
         self.setup_ui(self)
         self.fill_tabs()
 
-    def fill_tabs(self):  # метод для заполнения окна списков
+    def fill_tabs(self):
+        """
+        Method fills tabs windows with media content corresponding to their status.
+
+        :return: None
+        """
+
         grid = QGridLayout(self)
         tab = QTabWidget(self)
         tab.adjustSize()
@@ -397,7 +440,7 @@ class TabsWindow(MainWindow, UiTabsWindow):  # класс окна списка 
             w = QWidget()
             lay = QGridLayout(self)
             lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
-            for el in self.res:
+            for el in self.picture_titles:
                 a = list([str(j) for j in el])
                 if el[1] == status_list[i]:
                     txt = '\n'.join(i.upper() for i in
