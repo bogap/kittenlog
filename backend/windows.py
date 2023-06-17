@@ -5,141 +5,159 @@ from PyQt6 import uic, QtGui
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QGridLayout, QScrollArea, QPlainTextEdit, QInputDialog, \
     QFileDialog, QMessageBox, QStatusBar, QTabWidget
-from UI.a1 import Ui_MainWindow
-from UI.a2 import Ui_PlusWindow
-from UI.a3 import Ui_EqWindow
+from UI.a1 import UiMainWindow
+from UI.a2 import UiInputWindow
+from UI.a3 import UiTabsWindow
 
 
-class MainWindow(QMainWindow, Ui_MainWindow):
+class MainWindow(QMainWindow, UiMainWindow):
     """
-    This is class for main window
+    This is class for main window......
     """
 
     def __init__(self):
         """
-        Class Constructor.
+        Class Constructor sets all window parameters.
         """
+
         super().__init__()
         self.window_size = [7, 30, 700, 700]
-        self.redact_obj = None
+        self.edit_obj = None
         self.titles = None
         self.remove_buttons = None
-        self.redact_buttons = None
+        self.edit_buttons = None
         self.buttons = None
-        self.sb = QStatusBar(self)
-        self.eq_btn = QPushButton(self)
-        self.plus_btn = QPushButton(self)
+        self.enter_text = None
+        self.rating = None
+        self.status_box = None
+        self.review = None
+        self.back = None
+        self.add_button = None
+        self.status_bar = QStatusBar(self)
+        self.equal_button = QPushButton(self)
+        self.plus_button = QPushButton(self)
         self.set_window()
         self.set_swimming_buttons()
 
     def set_window(self):
         """
-        Method sets the window parameters such as window size, background color, and widgets.
+        Method sets the window parameters such a background color, and widgets displaying.
+
         :return: None
         """
+
         super().__init__()
-        self.setupUi(self)
+        self.setup_ui(self)
         self.setGeometry(*self.window_size)
         self.setWindowIcon(QtGui.QIcon('imgs/krug'))
         self.setStyleSheet('background-color: rgb(241, 231, 255);')
         self.connect_to_db()
-        self.display_widgets_buttons()
+        self.display_media_list()
 
     def set_swimming_buttons(self):
         """
-        Method for going to new_media window and media_by_categories window
-        :return: None
-        """
-        self.plus_btn.clicked.connect(self.open_window_to_add_media_content)
-        self.plus_btn.setStyleSheet("QPushButton{\n"
-                                    "    background-color: rgb(201, 164, 255);\n"
-                                    "    border-radius: 13px;\n"
-                                    "    margin: 7px;\n"
-                                    "}\n"
-                                    "QPushButton:hover{\n"
-                                    "    background-color: rgb(162, 0, 255);\n"
-                                    "}")
-        self.plus_btn.setText('+')
-        self.plus_btn.setFixedSize(40, 40)
-        self.eq_btn.clicked.connect(self.open_window_with_tabs)
-        self.eq_btn.setStyleSheet("QPushButton{\n"
-                                  "    background-color: rgb(201, 164, 255);\n"
-                                  "    border-radius: 13px;\n"
-                                  "    margin: 7px;\n"
-                                  "}\n"
-                                  "QPushButton:hover{\n"
-                                  "    background-color: rgb(162, 0, 255);\n"
-                                  "}")
-        self.eq_btn.setText('=')
-        self.eq_btn.setFixedSize(40, 40)
-        self.container()
+        Method for going to input window - window for adding more media content in list,
+        and tabs window - window with tabs showing status of media content.
 
-    def container(self):
-        """
-        Method containing plus_btn and eq_btn
         :return: None
         """
-        self.sb.setStyleSheet('background-color: rgba(0, 0, 0,0);')
-        self.sb.move(10, 10)
-        self.sb.addWidget(self.plus_btn)
-        self.sb.addWidget(self.eq_btn)
-        self.sb.setFixedSize(100, 40)
 
-    def display_widgets_buttons(self):
+        self.plus_button.clicked.connect(self.open_input_window)
+        self.plus_button.setStyleSheet("QPushButton{\n"
+                                       "    background-color: rgb(201, 164, 255);\n"
+                                       "    border-radius: 13px;\n"
+                                       "    margin: 7px;\n"
+                                       "}\n"
+                                       "QPushButton:hover{\n"
+                                       "    background-color: rgb(162, 0, 255);\n"
+                                       "}")
+        self.plus_button.setText('+')
+        self.plus_button.setFixedSize(40, 40)
+        self.equal_button.clicked.connect(self.open_tabs_window)
+        self.equal_button.setStyleSheet("QPushButton{\n"
+                                        "    background-color: rgb(201, 164, 255);\n"
+                                        "    border-radius: 13px;\n"
+                                        "    margin: 7px;\n"
+                                        "}\n"
+                                        "QPushButton:hover{\n"
+                                        "    background-color: rgb(162, 0, 255);\n"
+                                        "}")
+        self.equal_button.setText('=')
+        self.equal_button.setFixedSize(40, 40)
+        self.create_widgets()
+
+    def create_widgets(self):
         """
-        Method for displaying pictures, buttons and information
+        Method creates widgets for plus button - button to go to the input window,
+        and equal button - button to go to the tabs window.
+
         :return: None
         """
+
+        self.status_bar.setStyleSheet('background-color: rgba(0, 0, 0,0);')
+        self.status_bar.move(10, 10)
+        self.status_bar.addWidget(self.plus_button)
+        self.status_bar.addWidget(self.equal_button)
+        self.status_bar.setFixedSize(100, 40)
+
+    def display_media_list(self):
+        """
+        Method displays media list in the main window.
+        It sets parameters of pictures, buttons and fields with information about media content.
+
+        :return: None
+        """
+
         scr = QScrollArea(self)
         scr.setWidgetResizable(True)
         pnl = QWidget(self)
         layout = QGridLayout(self)
         self.buttons = {i: QPushButton(self) for i in range(len(self.res))}
-        self.redact_buttons = {i: QPushButton(self) for i in range(len(self.res))}
+        self.edit_buttons = {i: QPushButton(self) for i in range(len(self.res))}
         self.remove_buttons = {i: QPushButton(self) for i in range(len(self.res))}
         self.titles = []
 
         self.res.reverse()
         self.puti.reverse()
         for i in range(len(self.res)):
-            pic_btn = self.buttons[i]
-            redact_btn = self.redact_buttons[i]
-            remove_btn = self.remove_buttons[i]
-            redact_btn.setStyleSheet("QPushButton{\n"
-                                     "    background-color: rgb(201, 164, 255);\n"
-                                     "    border-radius: 10px;\n"
-                                     "    padding: 5px;\n"
-                                     "    width: 90px;\n"
-                                     "    height: 15px;\n"
-                                     "}\n"
-                                     "QPushButton:hover{\n"
-                                     "    background-color: rgb(157, 0, 255);\n"
-                                     "}")
-            remove_btn.setStyleSheet("QPushButton{\n"
-                                     "    background-color: rgb(201, 164, 255);\n"
-                                     "    border-radius: 10px;\n"
-                                     "    padding: 5px;\n"
-                                     "    width: 90px;\n"
-                                     "    height: 15px;\n"
-                                     "}\n"
-                                     "QPushButton:hover{\n"
-                                     "    background-color: rgb(157, 0, 255);\n"
-                                     "}")
-            pic_btn.setFixedSize(225, 320)
-            redact_btn.setText('edit')
-            remove_btn.setText('delete')
+            pic_button = self.buttons[i]
+            edit_button = self.edit_buttons[i]
+            remove_button = self.remove_buttons[i]
+            edit_button.setStyleSheet("QPushButton{\n"
+                                      "    background-color: rgb(201, 164, 255);\n"
+                                      "    border-radius: 10px;\n"
+                                      "    padding: 5px;\n"
+                                      "    width: 90px;\n"
+                                      "    height: 15px;\n"
+                                      "}\n"
+                                      "QPushButton:hover{\n"
+                                      "    background-color: rgb(157, 0, 255);\n"
+                                      "}")
+            remove_button.setStyleSheet("QPushButton{\n"
+                                        "    background-color: rgb(201, 164, 255);\n"
+                                        "    border-radius: 10px;\n"
+                                        "    padding: 5px;\n"
+                                        "    width: 90px;\n"
+                                        "    height: 15px;\n"
+                                        "}\n"
+                                        "QPushButton:hover{\n"
+                                        "    background-color: rgb(157, 0, 255);\n"
+                                        "}")
+            pic_button.setFixedSize(225, 320)
+            edit_button.setText('edit')
+            remove_button.setText('delete')
             a = list([str(j) for j in self.res[i]])
             putin = list([str(j) for j in self.puti[i]])
             if putin[1] != '':
                 im = Image.open(putin[1])
                 im2 = im.resize((225, 320))
                 im2.save(putin[1])
-                pic_btn.setStyleSheet(f'background-image : url({putin[1]});')
+                pic_button.setStyleSheet(f'background-image : url({putin[1]});')
             else:
-                pic_btn.setStyleSheet(f'background-image : url(imgs/umol.jpg);')
-            pic_btn.clicked.connect(self.select_picture)
-            redact_btn.clicked.connect(self.edit_list)
-            remove_btn.clicked.connect(self.remove_from_list)
+                pic_button.setStyleSheet(f'background-image : url(imgs/umol.jpg);')
+            pic_button.clicked.connect(self.select_picture)
+            edit_button.clicked.connect(self.edit_list)
+            remove_button.clicked.connect(self.remove_from_list)
             text = QPlainTextEdit(self)
             self.titles.append(a[0])
             fields = ['title', 'status', 'type', 'progress', 'rating', 'review']
@@ -147,20 +165,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 text.appendPlainText(f'{fields[k]}: {a[k]}')
             text.setReadOnly(True)
             text.setStyleSheet('background-color: rgb(241, 231, 255);')
-            layout.addWidget(pic_btn, i, 3)
+            layout.addWidget(pic_button, i, 3)
             layout.addWidget(text, i, 2)
             grid = QGridLayout()
             wid = QWidget()
             wid.setLayout(grid)
             grid.setVerticalSpacing(1)
-            grid.addWidget(redact_btn)
-            grid.addWidget(remove_btn)
+            grid.addWidget(edit_button)
+            grid.addWidget(remove_button)
             layout.addWidget(wid, i, 1)
         pnl.setLayout(layout)
         scr.setWidget(pnl)
         self.setCentralWidget(scr)
 
-    def remove_from_list(self):  # метод для удаления из списка
+    def remove_from_list(self):
+        """
+        Method edits media list by removing certain media item from the list.
+
+        :return: None
+        """
+
         for k in self.remove_buttons.keys():
             if self.remove_buttons[k] == self.sender():
                 nam = self.titles[k]
@@ -173,45 +197,56 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def edit_list(self):
         """
-        Method for list redaction
+        Method edits certain media item in the list.
+
         :return: None
         """
+
         path = os.path.join('../UI', 'a2.ui')
         uic.loadUi(path, self)
         # uic.loadUi('UI/a2.ui', self)
-        for k in self.redact_buttons.keys():
-            if self.redact_buttons[k] == self.sender():
-                self.redact_obj = self.titles[k]
+        for k in self.edit_buttons.keys():
+            if self.edit_buttons[k] == self.sender():
+                self.edit_obj = self.titles[k]
                 self.back.hide()
                 self.save_editing()
 
     def save_editing(self):
         """
-        Method for saving changes
+        Method saves changes after editing certain media item in the list.
+
         :return: None
         """
-        self.vvodtext.setText(self.redact_obj)
-        btn_arr = [self.r1, self.r2, self.r3, self.r4, self.r5, self.r6, self.r7, self.r8, self.r9]
-        for el in self.res:
-            if el[0] == self.redact_obj:
-                self.ocenka.setMaximum(10)
-                self.ocenka.setValue(el[4])
-                self.statusbox.setCurrentText(el[1])
-                self.otzyv.setPlainText(el[5])
-                for but in btn_arr:
-                    if but.text() == el[2]:
+
+        self.enter_text.setText(self.edit_obj)
+        array_of_buttons = [self.r1, self.r2, self.r3, self.r4, self.r5, self.r6, self.r7, self.r8, self.r9]
+        for item in self.res:
+            if item[0] == self.edit_obj:
+                self.rating.setMaximum(10)
+                self.rating.setValue(item[4])
+                self.status_box.setCurrentText(item[1])
+                self.review.setPlainText(item[5])
+                for but in array_of_buttons:
+                    if but.text() == item[2]:
                         but.setChecked(True)
-        for el in self.puti:
-            if el[0] == self.redact_obj:
-                self.putreduct = el[1]
+        for item in self.puti:
+            if item[0] == self.edit_obj:
+                self.putreduct = item[1]
         cur = self.connection.cursor()
-        cur.execute("""DELETE from titles where название = ?""", (self.redact_obj,))
-        cur.execute("""DELETE from pictures where название = ?""", (self.redact_obj,))
+        cur.execute("""DELETE from titles where название = ?""", (self.edit_obj,))
+        cur.execute("""DELETE from pictures where название = ?""", (self.edit_obj,))
         self.connection.commit()
         self.connect_to_db()
-        self.btnadd.clicked.connect(self.save_info)
+        self.add_button.clicked.connect(self.save_info)
 
-    def select_picture(self):  # метод для выбора картинки при нажатии на имгбаттон
+    def select_picture(self):
+        """
+        Method allows to select a picture from the files
+        by clicking to image of media item in list.
+
+        :return: None
+        """
+
         for k in self.buttons.keys():
             if self.buttons[k] == self.sender():
                 fname = QFileDialog.getOpenFileName(
@@ -226,12 +261,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.connect_to_db()
                 self.open_main_window()
 
-    def connect_to_db(self):  # метод для подключения к бд
+    def connect_to_db(self):
+        """
+        Method ensures connection to database.
+
+        :return: None
+        """
+
         self.connection = sqlite3.connect('titles.db')
         self.res = self.connection.cursor().execute("""SELECT * FROM titles""").fetchall()
         self.puti = self.connection.cursor().execute("""SELECT * FROM pictures""").fetchall()
 
-    def closeEvent(self, event):  # спрашивает точно выйти
+    def closeEvent(self, event):
+        """
+        Method confirms that user wants to exit the main window
+        by asking user.
+
+        :param event: exit the window
+        :return: None
+        """
+
         close = QMessageBox()
         close.setText('are you sure you want to exit?')
         close.setWindowTitle(' ')
@@ -243,14 +292,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             event.ignore()
 
-    def open_window_to_add_media_content(self):  # открытие окна ввода информации
+    def open_input_window(self):
+        """
+        Method opens the input window to add new media item and enter information about it.
+
+        :return: None
+        """
+
         self.window_size = [self.x(), self.y() + 30, self.width(), self.height()]
         InputWindow().show()
         self.hide()
 
-    def open_window_with_tabs(self):  # открытие окна списка с разделами
+    def open_tabs_window(self):
+        """
+        Method opens tabs window to watch media items divided by their status in the tabs.
+
+        :return: None
+        """
+
         self.window_size = [self.x(), self.y() + 30, self.width(), self.height()]
-        MovieSectionWindow().show()
+        TabsWindow().show()
         self.hide()
 
     def open_main_window(self):  # открытие главного окна
@@ -258,13 +319,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.hide()
 
     def save_info(self):  # сохранение введенной информации в переменных
-        self.name = self.vvodtext.text()
-        self.status = self.statusbox.currentText()
+        self.name = self.enter_text.text()
+        self.status = self.status_box.currentText()
         checked = False
-        btns_arr = [self.r1, self.r2, self.r3, self.r4, self.r5, self.r6, self.r7, self.r8, self.r9]
-        for but in btns_arr:
-            if but.isChecked():
-                self.type = but.text()
+        array_of_buttons = [self.r1, self.r2, self.r3, self.r4, self.r5, self.r6, self.r7, self.r8, self.r9]
+        for button in array_of_buttons:
+            if button.isChecked():
+                self.type = button.text()
                 checked = True
         if self.name == '' or not checked:
             msg = QMessageBox()
@@ -283,8 +344,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.message = 'number of pages read:'
         self.progress, ok_pressed = QInputDialog.getText(self, "progress",
                                                          self.message)
-        self.ocenk = self.ocenka.text()
-        self.otzv = self.otzyv.toPlainText()
+        self.ocenk = self.rating.text()
+        self.otzv = self.review.toPlainText()
         if ok_pressed:
             self.update_db()
         self.open_main_window()
@@ -300,36 +361,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connection.commit()
 
 
-class InputWindow(MainWindow, Ui_PlusWindow, Ui_MainWindow):  # класс окна ввода
+class InputWindow(MainWindow, UiInputWindow, UiMainWindow):  # класс окна ввода
     def __init__(self):
         super().__init__()
-        self.setupUi(self)
-        self.ocenka.setMaximum(10)
+        self.setup_ui(self)
+        self.rating.setMaximum(10)
         try:
             if self.sender().text() == '+':
                 self.back.clicked.connect(self.open_main_window)
-                self.btnadd.clicked.connect(self.save_info)
+                self.add_button.clicked.connect(self.save_info)
 
             else:
-                self.btnadd.clicked.connect(self.save_editing)
+                self.add_button.clicked.connect(self.save_editing)
         except Exception:
-            self.btnadd.clicked.connect(self.save_info)
+            self.add_button.clicked.connect(self.save_info)
 
 
-class MovieSectionWindow(MainWindow, Ui_EqWindow):  # класс окна списка с разделами
+class TabsWindow(MainWindow, UiTabsWindow):  # класс окна списка с разделами
     def __init__(self):
         super().__init__()
-        self.setupUi(self)
-        self.spiski()
+        self.setup_ui(self)
+        self.fill_tabs()
 
-    def spiski(self):  # метод для заполнения окна списков
+    def fill_tabs(self):  # метод для заполнения окна списков
         grid = QGridLayout(self)
         tab = QTabWidget(self)
         tab.adjustSize()
-        statuslist = ['already watched', 'currently watching', 'add in watchlist',
-                      'already read', 'currently reading', 'add in readlist']
-        maxwidth = 0
-        for i in range(6):
+        status_list = ['already watched', 'currently watching', 'add in watchlist',
+                       'already read', 'currently reading', 'add in readlist']
+        max_width = 0
+        number_of_tabs = 6
+        for i in range(number_of_tabs):
             content = QScrollArea(self)
             content.setWidgetResizable(True)
             w = QWidget()
@@ -337,7 +399,7 @@ class MovieSectionWindow(MainWindow, Ui_EqWindow):  # класс окна спи
             lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
             for el in self.res:
                 a = list([str(j) for j in el])
-                if el[1] == statuslist[i]:
+                if el[1] == status_list[i]:
                     txt = '\n'.join(i.upper() for i in
                                     [f'title: {a[0]}', f'status: {a[1]}', f'type: {a[2]}', f'progress: {a[3]}',
                                      f'rating: {a[4]}', f'review: {a[5]}'])
@@ -346,15 +408,15 @@ class MovieSectionWindow(MainWindow, Ui_EqWindow):  # класс окна спи
                     title.setFixedWidth(self.width())
                     title.adjustSize()
                     title.setReadOnly(True)
-                    if title.width() > maxwidth:
-                        maxwidth = title.width()
+                    if title.width() > max_width:
+                        max_width = title.width()
                     lay.addWidget(title)
             w.setLayout(lay)
             content.setWidget(w)
-            tab.addTab(content, statuslist[i])
+            tab.addTab(content, status_list[i])
             grid.addWidget(tab)
             self.setCentralWidget(tab)
-            self.setMinimumWidth(maxwidth + 30)
+            self.setMinimumWidth(max_width + 30)
         backbtn = QPushButton()
         backbtn.setText('<-')
         backbtn.clicked.connect(self.open_main_window)

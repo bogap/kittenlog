@@ -11,8 +11,8 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class Ui_PlusWindow(object):
-    def setupUi(self, MainWindow):
+class UiInputWindow(object):
+    def setup_ui(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(770, 203)
         MainWindow.setStyleSheet("background-color: rgb(241, 231, 255);")
@@ -264,10 +264,10 @@ class Ui_PlusWindow(object):
         self.gridLayout_3.addLayout(self.gridLayout_2, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(MainWindow)
+        self.retranslate_ui(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-    def retranslateUi(self, MainWindow):
+    def retranslate_ui(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "add title"))
         self.back.setText(_translate("MainWindow", "<-"))
