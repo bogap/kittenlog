@@ -21,6 +21,7 @@ url = "https://api.kinopoisk.dev/v1.3/movie?&limit=10&id={}/token/{}".format(
 )"""
 
 
+
 def get_movie_info(movie_title):
     url = f"https://api.kinopoisk.cloud/movies?keyword={movie_title}&fields=id,name,year,countries,genres,description"
     headers = {"Authorization": f"Bearer {token}"}
