@@ -11,20 +11,25 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
+def re_translate_ui(main_win):
+    _translate = QtCore.QCoreApplication.translate
+    main_win.setWindowTitle(_translate("MainWindow", "kitten_ฅ^•ﻌ•^ฅ_log"))
+
+
+class UiMainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1102, 522)
-        MainWindow.setStyleSheet("background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(234, 203, 239, 50), stop:0.52 rgba(0, 0, 0, 0), stop:0.565 rgba(82, 121, 76, 33), stop:0.65 rgba(159, 235, 148, 50), stop:0.721925 rgba(255, 238, 150, 50), stop:0.77 rgba(255, 128, 128, 50), stop:0.89 rgba(191, 128, 255, 50), stop:1 rgba(241, 231, 255, 255));")
+        MainWindow.setStyleSheet(
+            "background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, "
+            "stop:0 rgba(234, 203, 239, 50), stop:0.52 rgba(0, 0, 0, 0), stop:0.565 rgba(82, 121, 76, 33), "
+            "stop:0.65 rgba(159, 235, 148, 50), stop:0.721925 rgba(255, 238, 150, 50), "
+            "stop:0.77 rgba(255, 128, 128, 50), stop:0.89 rgba(191, 128, 255, 50), stop:1 rgba(241, 231, 255, 255));")
         self.central_widget = QtWidgets.QWidget(MainWindow)
-        self.central_widget.setObjectName("centralwidget")
+        self.central_widget.setObjectName("central_widget")
         self.grid_layout = QtWidgets.QGridLayout(self.central_widget)
-        self.grid_layout.setObjectName("gridLayout")
+        self.grid_layout.setObjectName("grid_layout")
         MainWindow.setCentralWidget(self.central_widget)
 
-        self.retranslateUi(MainWindow)
+        re_translate_ui(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "зиризири"))

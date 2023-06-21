@@ -4,14 +4,14 @@ from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton
 from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit
 from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox, QStatusBar
 from PyQt6.QtWidgets import QApplication
-from a1 import Ui_MainWindow
-from a2 import Ui_PlusWindow
+from a1 import UiMainWindow
+from a2 import UiPlusWindow
 from PyQt6 import uic
 import sqlite3
 import sys
 
 
-class Main(QMainWindow, Ui_MainWindow):
+class Main(QMainWindow, UiMainWindow):
     """
         Main window
         """
@@ -161,8 +161,8 @@ class Main(QMainWindow, Ui_MainWindow):
             if self.remove_button_list[k] == self.sender():
                 remove_item_name = self.name_list[k]
         cur = self.connection.cursor()
-        cur.execute("""DELETE from titles where название = ?""", (remove_item_name,))
-        cur.execute("""DELETE from pictures where название = ?""", (remove_item_name,))
+        cur.execute("""DELETE from titles where title = ?""", (remove_item_name,))
+        cur.execute("""DELETE from pictures where title = ?""", (remove_item_name,))
         self.connection.commit()
         self.load_db()
         self.main_window()
@@ -176,7 +176,7 @@ class Main(QMainWindow, Ui_MainWindow):
         for k in self.redact_button_list.keys():
             if self.redact_button_list[k] == self.sender():
                 self.reductObj = self.name_list[k]
-                self.back.hide()
+                self.back_button.hide()
                 self.save_redacted_item()
 
     def save_redacted_item(self):
@@ -184,14 +184,14 @@ class Main(QMainWindow, Ui_MainWindow):
         Method for saving redacted media list item
         :return:
         """
-        self.vvodtext.setText(self.reductObj)
+        self.title_input.setText(self.reductObj)
         media_type_array = [self.r1, self.r2, self.r3, self.r4, self.r5, self.r6, self.r7, self.r8, self.r9]
         for el in self.title_list:
             if el[0] == self.reductObj:
-                self.ocenka.setMaximum(10)
-                self.ocenka.setValue(el[4])
+                self.rating_spin_box.setMaximum(10)
+                self.rating_spin_box.setValue(el[4])
                 self.statusbox.setCurrentText(el[1])
-                self.otzyv.setPlainText(el[5])
+                self.comment_input.setPlainText(el[5])
                 for button in media_type_array:
                     if button.text() == el[2]:
                         button.setChecked(True)
@@ -199,8 +199,8 @@ class Main(QMainWindow, Ui_MainWindow):
             if el[0] == self.reductObj:
                 self.redact_path = el[1]
         cur = self.connection.cursor()
-        cur.execute("""DELETE from titles where название = ?""", (self.reductObj,))
-        cur.execute("""DELETE from pictures where название = ?""", (self.reductObj,))
+        cur.execute("""DELETE from titles where title = ?""", (self.reductObj,))
+        cur.execute("""DELETE from pictures where title = ?""", (self.reductObj,))
         self.connection.commit()
         self.load_db()
         self.btnadd.clicked.connect(self.save_info)
@@ -217,8 +217,8 @@ class Main(QMainWindow, Ui_MainWindow):
                     'Picture (*.jpg);;Picture (*.jpg);;All files (*)')[0]
                 cur = self.connection.cursor()
                 cur.execute("""UPDATE pictures
-                                SET путь = ?
-                                WHERE название= ?""", (fname, self.name_list[k]))
+                                SET path = ?
+                                WHERE title= ?""", (fname, self.name_list[k]))
                 self.connection.commit()
                 self.button_list[k].setStyleSheet(f'background-image : url({fname});')
                 self.load_db()
@@ -261,8 +261,8 @@ class Main(QMainWindow, Ui_MainWindow):
         Method for saving information from user's input
         :return:
         """
-        self.title = self.vvodtext.text()
-        self.status = self.statusbox.currentText()
+        self.title = self.title_input.text()
+        self.status = self.status_combo_box.currentText()
         choice = False
         checkboxes = [self.r1, self.r2, self.r3, self.r4, self.r5, self.r6, self.r7, self.r8, self.r9]
         for but in checkboxes:
@@ -277,16 +277,13 @@ class Main(QMainWindow, Ui_MainWindow):
             msg.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
             msg.exec()
             return
-        if self.type in ['аниме', 'сериал', 'фильм', 'мультфильм']:
-            self.message = 'серий просмотрено:'
-        elif self.type in ['манга', 'комикс', 'манхва', 'маньхуа']:
-            self.message = 'глав прочитано:'
-        elif self.type == 'книга':
-            self.message = 'страниц прочитано:'
-        self.progress, ok_pressed = QInputDialog.getText(self, "прогресс",
-                                                         self.message)
-        self.rating = self.ocenka.text()
-        self.comment = self.otzyv.toPlainText()
+
+        self.message = 'progress:'
+        if self.status != "planned":
+            self.progress, ok_pressed = QInputDialog.getText(self, "progress",
+                                                             self.message)
+        self.rating = self.rating_spin_box.text()
+        self.comment = self.comment_input.toPlainText()
         if ok_pressed:
             self.update_db()
         self.main_window()
@@ -297,16 +294,16 @@ class Main(QMainWindow, Ui_MainWindow):
         :return:
         """
         cur = self.connection.cursor()
-        cur.execute("""INSERT INTO titles(название, статус, тип, прогресс, оценка, отзыв) VALUES(?,?,?,?,?,?)""",
+        cur.execute("""INSERT INTO titles(title, status, type, progress, rating, comment) VALUES(?,?,?,?,?,?)""",
                     (self.title, self.status, self.type, self.progress, self.rating, self.comment))
         try:
-            cur.execute("""INSERT INTO pictures(название,путь) VALUES(?,?)""", (self.title, self.putreduct))
+            cur.execute("""INSERT INTO pictures(title, path) VALUES(?,?)""", (self.title, self.putreduct))
         except:
-            cur.execute("""INSERT INTO pictures(название,путь) VALUES(?,?)""", (self.title, ''))
+            cur.execute("""INSERT INTO pictures(title,path) VALUES(?,?)""", (self.title, ''))
         self.connection.commit()
 
 
-class InputWindow(Main, Ui_PlusWindow, Ui_MainWindow):
+class InputWindow(Main, UiPlusWindow, UiMainWindow):
     """
     Input window class
     """
@@ -314,16 +311,16 @@ class InputWindow(Main, Ui_PlusWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.ocenka.setMaximum(10)
+        self.rating_spin_box.setMaximum(10)
         try:
             if self.sender().text() == '+':
-                self.back.clicked.connect(self.main_window)
-                self.btnadd.clicked.connect(self.save_info)
+                self.back_button.clicked.connect(self.main_window)
+                self.button_add.clicked.connect(self.save_info)
 
             else:
-                self.btnadd.clicked.connect(self.saveReduct)
+                self.button_add.clicked.connect(self.saveReduct)
         except:
-            self.btnadd.clicked.connect(self.save_info)
+            self.button_add.clicked.connect(self.save_info)
 
 
 if __name__ == '__main__':
