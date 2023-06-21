@@ -169,7 +169,7 @@ class UiPlusWindow(object):
                                       "QPushButton:hover{\n"
                                       "    background-color: rgb(157, 0, 255);\n"
                                       "}")
-        self.button_add.setObjectName("btnadd")
+        #self.button_add.setObjectName("btnadd")
 
         self.spacer_add_left = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding,
                                                      QtWidgets.QSizePolicy.Policy.Minimum)
@@ -205,7 +205,7 @@ class UiPlusWindow(object):
         self.rating_text.setText(_translate("MainWindow", "  rating:"))
         self.rating_from.setText(_translate("MainWindow", "/10"))
         self.status_text.setText(_translate("MainWindow", "input status:"))
-        self.status_combo_box.setItemText(0, _translate("MainWindow", "planed"))
+        self.status_combo_box.setItemText(0, _translate("MainWindow", "planned"))
         self.status_combo_box.setItemText(1, _translate("MainWindow", "in progress"))
         self.status_combo_box.setItemText(2, _translate("MainWindow", "finished"))
         self.button_add.setText(_translate("MainWindow", "add"))

@@ -186,11 +186,13 @@ class Main(QMainWindow, UiMainWindow):
         """
         self.title_input.setText(self.reductObj)
         media_type_array = [self.r1, self.r2, self.r3, self.r4, self.r5, self.r6, self.r7, self.r8, self.r9]
+        print(*self.title_list)
+        print(self.reductObj)
         for el in self.title_list:
             if el[0] == self.reductObj:
                 self.rating_spin_box.setMaximum(10)
                 self.rating_spin_box.setValue(el[4])
-                self.statusbox.setCurrentText(el[1])
+                self.status_combo_box.setCurrentText(el[1])
                 self.comment_input.setPlainText(el[5])
                 for button in media_type_array:
                     if button.text() == el[2]:
@@ -203,7 +205,7 @@ class Main(QMainWindow, UiMainWindow):
         cur.execute("""DELETE from pictures where title = ?""", (self.reductObj,))
         self.connection.commit()
         self.load_db()
-        self.btnadd.clicked.connect(self.save_info)
+        self.button_add.clicked.connect(self.save_info)
 
     def choose_picture(self):
         """
@@ -265,6 +267,7 @@ class Main(QMainWindow, UiMainWindow):
         self.status = self.status_combo_box.currentText()
         choice = False
         checkboxes = [self.r1, self.r2, self.r3, self.r4, self.r5, self.r6, self.r7, self.r8, self.r9]
+        print(1)
         for but in checkboxes:
             if but.isChecked():
                 self.type = but.text()
@@ -278,10 +281,8 @@ class Main(QMainWindow, UiMainWindow):
             msg.exec()
             return
 
-        self.message = 'progress:'
-        if self.status != "planned":
-            self.progress, ok_pressed = QInputDialog.getText(self, "progress",
-                                                             self.message)
+        self.message = 'progress'
+        self.progress, ok_pressed = QInputDialog.getText(self, "progress", self.message)
         self.rating = self.rating_spin_box.text()
         self.comment = self.comment_input.toPlainText()
         if ok_pressed:
