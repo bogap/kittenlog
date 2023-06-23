@@ -12,15 +12,14 @@ class Kinopoisk:
 
         for i in range(min(len(search), 5)):
             item = search[i]
-            print("Название: " + item.ru_name,
-                  "Оценка: " + str(item.kp_rate),
-                  "Год выпуска: " + item.year,
-                  "Страны: " + ", ".join(item.countries),
-                  "Жанры: " + ", ".join(item.genres),
-                  "Ссылка на фильм на кинопоиске: " + item.kp_url,
-                  "Ссылка на постер фильма: " + item.poster,
-                  sep="\n")
-            print()
+            info = {"Название": item.ru_name,
+                  "Оценка": str(item.kp_rate),
+                  "Год выпуска": item.year,
+                  "Страны": ", ".join(item.countries),
+                  "Жанры": ", ".join(item.genres),
+                  "Ссылка на фильм на кинопоиске": item.kp_url,
+                  "Ссылка на постер фильма": item.poster}
+            return info
 
 
 # # Пример использования
