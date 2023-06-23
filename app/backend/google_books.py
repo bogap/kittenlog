@@ -61,9 +61,8 @@ def get_book(request: str) -> list[Book] | None:
     books = []
     try:
         response = get("https://www.googleapis.com/books/v1/volumes?q={}&key={}".format(request, API_KEY))
-    except Exception as e:
-        print("Что-то поломалосб у гугла ඞ\n", e)
-        return None
+    if "items" not in response:
+        raise ValueError("Invalid API response ඞ")
     json_obj = json.loads(response.content)
     books_json = json_obj["items"]
     for book_instance in books_json:
