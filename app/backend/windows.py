@@ -182,8 +182,6 @@ class Main(QMainWindow, UiMainWindow):
         """
         self.title_input.setText(self.reductObj)
         media_type_array = [self.r1, self.r2, self.r3, self.r4, self.r5, self.r6, self.r7, self.r8, self.r9]
-        print(*self.title_list)
-        print(self.reductObj)
         for el in self.title_list:
             if el[0] == self.reductObj:
                 self.rating_spin_box.setMaximum(10)
@@ -260,7 +258,6 @@ class Main(QMainWindow, UiMainWindow):
         self.status = self.status_combo_box.currentText()
         choice = False
         checkboxes = [self.r1, self.r2, self.r3, self.r4, self.r5, self.r6, self.r7, self.r8, self.r9]
-        print(1)
         for but in checkboxes:
             if but.isChecked():
                 self.type = but.text()
