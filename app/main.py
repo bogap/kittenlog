@@ -30,7 +30,7 @@ class Main(QMainWindow, UiMainWindow):
         """
         super().__init__()
         self.setupUi(self)
-        f = open('backend/size1.txt')
+        f = open('size1.txt')
         a = [int(i) for i in f.read().split(' ')]
         f.close()
         self.setGeometry(*a)
@@ -172,7 +172,7 @@ class Main(QMainWindow, UiMainWindow):
         Method for redacting media list items
         :return:
         """
-        uic.loadUi('a2.ui', self)
+        uic.loadUi('frontend/a2.ui', self)
         for k in self.redact_button_list.keys():
             if self.redact_button_list[k] == self.sender():
                 self.reductObj = self.name_list[k]
@@ -241,7 +241,7 @@ class Main(QMainWindow, UiMainWindow):
         :return:
         """
         self.currect_size = [self.x(), self.y() + 30, self.width(), self.height()]
-        file = open('backend/size1.txt', 'w')
+        file = open('size1.txt', 'w')
         new_size = ' '.join([str(i) for i in self.currect_size])
         file.write(new_size)
         file.close()
