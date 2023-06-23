@@ -4,11 +4,12 @@ from dotenv import dotenv_values
 
 class Kinopoisk:
     def __init__(self):
-        self.env_variables = dotenv_values(".env")
+        self.env_variables = dotenv_values("../../.env")
         self.kinopoisk = KP(token=self.env_variables["KINOPOISK_API_KEY"])
 
     def search(self, keyword):
         search = self.kinopoisk.search(keyword)
+        list_of_movies = []
 
         for i in range(min(len(search), 5)):
             item = search[i]
@@ -19,11 +20,12 @@ class Kinopoisk:
                   "Жанры": ", ".join(item.genres),
                   "Ссылка на фильм на кинопоиске": item.kp_url,
                   "Ссылка на постер фильма": item.poster}
-            return info
+            list_of_movies.append(info)
+        return list_of_movies
 
 
 # Пример использования
 
 kinop = Kinopoisk()
 keywords = input('>: ')
-kinop.search(keywords)
+print(kinop.search(keywords))
