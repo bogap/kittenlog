@@ -22,8 +22,8 @@ class Kinopoisk:
             return info
 
 
-# # Пример использования
-#
-# kinop = Kinopoisk()
-# keywords = input('>: ')
-# kinop.search(keywords)
+# Пример использования
+
+kinop = Kinopoisk()
+keywords = input('>: ')
+kinop.search(keywords)
