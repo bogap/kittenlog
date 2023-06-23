@@ -18,6 +18,7 @@ class Main(QMainWindow, UiMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.size = [433, 124, 693, 614]
         self.eq_btn = QPushButton(self)
         self.plus_btn = QPushButton(self)
         self.initialize()
@@ -30,10 +31,7 @@ class Main(QMainWindow, UiMainWindow):
         """
         super().__init__()
         self.setupUi(self)
-        f = open('size1.txt')
-        a = [int(i) for i in f.read().split(' ')]
-        f.close()
-        self.setGeometry(*a)
+        self.setGeometry(*self.size)
         self.setWindowIcon(QtGui.QIcon('imgs/krug'))
         self.setStyleSheet('background-color: rgb(241, 231, 255);')
         self.load_db()
@@ -241,10 +239,7 @@ class Main(QMainWindow, UiMainWindow):
         :return:
         """
         self.currect_size = [self.x(), self.y() + 30, self.width(), self.height()]
-        file = open('size1.txt', 'w')
-        new_size = ' '.join([str(i) for i in self.currect_size])
-        file.write(new_size)
-        file.close()
+        self.size = [int(i) for i in self.currect_size]
         self.win = InputWindow()
         self.win.show()
         self.hide()
