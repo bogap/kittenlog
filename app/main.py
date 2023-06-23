@@ -4,8 +4,8 @@ from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton
 from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit
 from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox, QStatusBar
 from PyQt6.QtWidgets import QApplication
-from a1 import UiMainWindow
-from a2 import UiPlusWindow
+from app.frontend.a1 import UiMainWindow
+from app.frontend.a2 import UiPlusWindow
 from PyQt6 import uic
 import sqlite3
 import sys
@@ -30,7 +30,7 @@ class Main(QMainWindow, UiMainWindow):
         """
         super().__init__()
         self.setupUi(self)
-        f = open('size1.txt')
+        f = open('backend/size1.txt')
         a = [int(i) for i in f.read().split(' ')]
         f.close()
         self.setGeometry(*a)
@@ -231,7 +231,7 @@ class Main(QMainWindow, UiMainWindow):
         Method for connecting to database
         :return:
         """
-        self.connection = sqlite3.connect('titles.db')
+        self.connection = sqlite3.connect('../titles.db')
         self.title_list = self.connection.cursor().execute("""SELECT * FROM titles""").fetchall()
         self.path_list = self.connection.cursor().execute("""SELECT * FROM pictures""").fetchall()
 
@@ -241,7 +241,7 @@ class Main(QMainWindow, UiMainWindow):
         :return:
         """
         self.currect_size = [self.x(), self.y() + 30, self.width(), self.height()]
-        file = open('size1.txt', 'w')
+        file = open('backend/size1.txt', 'w')
         new_size = ' '.join([str(i) for i in self.currect_size])
         file.write(new_size)
         file.close()
