@@ -3,12 +3,10 @@ from PyQt6 import QtGui
 from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton
 from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit
 from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox, QStatusBar
-from PyQt6.QtWidgets import QApplication
-from a1 import UiMainWindow
-from a2 import UiPlusWindow
+from app.frontend.a1 import UiMainWindow
+from app.frontend.a2 import UiPlusWindow
 from PyQt6 import uic
 import sqlite3
-import sys
 
 
 class Main(QMainWindow, UiMainWindow):
@@ -18,6 +16,7 @@ class Main(QMainWindow, UiMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.size = [433, 124, 693, 614]
         self.eq_btn = QPushButton(self)
         self.plus_btn = QPushButton(self)
         self.initialize()
@@ -30,10 +29,7 @@ class Main(QMainWindow, UiMainWindow):
         """
         super().__init__()
         self.setupUi(self)
-        f = open('size1.txt')
-        a = [int(i) for i in f.read().split(' ')]
-        f.close()
-        self.setGeometry(*a)
+        self.setGeometry(*self.size)
         self.setWindowIcon(QtGui.QIcon('imgs/krug'))
         self.setStyleSheet('background-color: rgb(241, 231, 255);')
         self.load_db()
@@ -172,7 +168,7 @@ class Main(QMainWindow, UiMainWindow):
         Method for redacting media list items
         :return:
         """
-        uic.loadUi('a2.ui', self)
+        uic.loadUi('frontend/a2.ui', self)
         for k in self.redact_button_list.keys():
             if self.redact_button_list[k] == self.sender():
                 self.reductObj = self.name_list[k]
@@ -229,7 +225,7 @@ class Main(QMainWindow, UiMainWindow):
         Method for connecting to database
         :return:
         """
-        self.connection = sqlite3.connect('titles.db')
+        self.connection = sqlite3.connect('../titles.db')
         self.title_list = self.connection.cursor().execute("""SELECT * FROM titles""").fetchall()
         self.path_list = self.connection.cursor().execute("""SELECT * FROM pictures""").fetchall()
 
@@ -239,10 +235,7 @@ class Main(QMainWindow, UiMainWindow):
         :return:
         """
         self.currect_size = [self.x(), self.y() + 30, self.width(), self.height()]
-        file = open('size1.txt', 'w')
-        new_size = ' '.join([str(i) for i in self.currect_size])
-        file.write(new_size)
-        file.close()
+        self.size = [int(i) for i in self.currect_size]
         self.win = InputWindow()
         self.win.show()
         self.hide()
@@ -319,10 +312,3 @@ class InputWindow(Main, UiPlusWindow, UiMainWindow):
                 self.button_add.clicked.connect(self.saveReduct)
         except:
             self.button_add.clicked.connect(self.save_info)
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = Main()
-    ex.show()
-    sys.exit(app.exec())
