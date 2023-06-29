@@ -153,7 +153,9 @@ class UiPlusWindow(object):
                                             "    background-color: rgb(157, 0, 255);\n"
                                             "}")
         self.status_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToContents)
-        self.status_combo_box.addItem("")
+        self.status_combo_box.addItem("planned")
+        self.status_combo_box.addItem("progress")
+        self.status_combo_box.addItem("finished")
         self.horizontal_layout_rating_status.addWidget(self.status_combo_box)
         self.vertical_layout_right.addLayout(self.horizontal_layout_rating_status)
         self.vertical_layout_add = QtWidgets.QVBoxLayout()
