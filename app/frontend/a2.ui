@@ -257,19 +257,6 @@ QRadioButton:hover{
          </layout>
         </item>
         <item>
-         <spacer name="verticalSpacer_5">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
          <layout class="QHBoxLayout" name="horizontal_layout_rating_status">
           <item>
            <widget class="QLabel" name="rating_text">
@@ -349,7 +336,7 @@ QComboBox:hover{
           <item>
            <layout class="QHBoxLayout" name="horizontal_layout_add">
             <item>
-             <spacer name="horizontalSpacer">
+             <spacer name="spacer_add_left">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -381,7 +368,7 @@ QPushButton:hover{
              </widget>
             </item>
             <item>
-             <spacer name="horizontalSpacer_2">
+             <spacer name="spacer_add_right">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>

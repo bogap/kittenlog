@@ -1,14 +1,14 @@
 from PIL import Image
 from PyQt6 import QtGui
-from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton
+from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox
 from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit
 from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox, QStatusBar
-from PyQt6.QtWidgets import QApplication
-from a1 import UiMainWindow
-from a2 import UiPlusWindow
+from PyQt6.uic.properties import QtWidgets
+
+from app.frontend.a1 import UiMainWindow
+from app.frontend.a2 import UiPlusWindow
 from PyQt6 import uic
 import sqlite3
-import sys
 
 
 class Main(QMainWindow, UiMainWindow):
@@ -18,7 +18,7 @@ class Main(QMainWindow, UiMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.eq_btn = QPushButton(self)
+        self.size = [433, 124, 693, 614]
         self.plus_btn = QPushButton(self)
         self.initialize()
         self.swimmingButtons()
@@ -31,10 +31,7 @@ class Main(QMainWindow, UiMainWindow):
         """
         super().__init__()
         self.setupUi(self)
-        f = open('size1.txt')
-        a = [int(i) for i in f.read().split(' ')]
-        f.close()
-        self.setGeometry(*a)
+        self.setGeometry(*self.size)
         self.setWindowIcon(QtGui.QIcon('imgs/krug'))
         self.setStyleSheet('background-color: rgb(241, 231, 255);')
         self.load_db()
@@ -58,25 +55,41 @@ class Main(QMainWindow, UiMainWindow):
         self.plus_btn.setText('+')
         self.plus_btn.setFixedSize(40, 40)
 
-        self.eq_btn.setStyleSheet("QPushButton{\n"
-                                  "    background-color: rgb(201, 164, 255);\n"
-                                  "    border-radius: 13px;\n"
-                                  "    margin: 7px;\n"
-                                  "}\n"
-                                  "QPushButton:hover{\n"
-                                  "    background-color: rgb(162, 0, 255);\n"
-                                  "}")
-        self.eq_btn.setText('=')
-        self.eq_btn.setFixedSize(60, 40)
+        self.filter_box = QComboBox(self)
+        self.filter_box.setFixedSize(70, 40)
+        self.filter_box.setStyleSheet("QComboBox{\n"
+                                      "    background-color: rgb(230, 208, 255);\n"
+                                      "    border-radius: 20px;\n"
+                                      "    width: 4px;\n"
+                                      "    height: 40px;\n"
+                                      "}\n"
+                                      "QComboBox:hover{\n"
+                                      "    background-color: rgb(157, 0, 255);\n"
+                                      "}")
+
+        self.filter_box.addItem("all")
+        self.filter_box.addItem("planned")
+        self.filter_box.addItem("progress")
+        self.filter_box.addItem("finished")
+
+        self.filter_box.view().pressed.connect(self.filter_by_category)
         self.container()
+
+    def filter_by_category(self, index):
+        item = self.filter_box.model().itemFromIndex(index)
+        self.load_db(item.text())
+        self.set_info()
+        self.swimmingButtons()
+        self.status_bar.show()
+        self.filter_box.setCurrentText(item.text())
 
     def container(self):
         self.status_bar = QStatusBar(self)
         self.status_bar.setStyleSheet('background-color:  rgba(0,0,0,0);')
         self.status_bar.move(10, 10)
         self.status_bar.addWidget(self.plus_btn)
-        self.status_bar.addWidget(self.eq_btn)
-        self.status_bar.setFixedSize(100, 40)
+        self.status_bar.addWidget(self.filter_box)
+        self.status_bar.setFixedSize(self.width(), 40)
 
     def set_info(self):
         """
@@ -103,7 +116,7 @@ class Main(QMainWindow, UiMainWindow):
                                         "    background-color: rgb(201, 164, 255);\n"
                                         "    border-radius: 10px;\n"
                                         "    padding: 5px;\n"
-                                        "    width: 90px;\n"
+                                        "    width: 100px;\n"
                                         "    height: 15px;\n"
                                         "}\n"
                                         "QPushButton:hover{\n"
@@ -113,7 +126,7 @@ class Main(QMainWindow, UiMainWindow):
                                         "    background-color: rgb(201, 164, 255);\n"
                                         "    border-radius: 10px;\n"
                                         "    padding: 5px;\n"
-                                        "    width: 90px;\n"
+                                        "    width: 100px;\n"
                                         "    height: 15px;\n"
                                         "}\n"
                                         "QPushButton:hover{\n"
@@ -175,7 +188,7 @@ class Main(QMainWindow, UiMainWindow):
         Method for redacting media list items
         :return:
         """
-        uic.loadUi('a2.ui', self)
+        uic.loadUi('frontend/a2.ui', self)
         for k in self.redact_button_list.keys():
             if self.redact_button_list[k] == self.sender():
                 self.reductObj = self.name_list[k]
@@ -189,8 +202,6 @@ class Main(QMainWindow, UiMainWindow):
         """
         self.title_input.setText(self.reductObj)
         media_type_array = [self.r1, self.r2, self.r3, self.r4, self.r5, self.r6, self.r7, self.r8, self.r9]
-        print(*self.title_list)
-        print(self.reductObj)
         for el in self.title_list:
             if el[0] == self.reductObj:
                 self.rating_spin_box.setMaximum(10)
@@ -229,14 +240,20 @@ class Main(QMainWindow, UiMainWindow):
                 self.load_db()
                 self.main_window()
 
-    def load_db(self):
+    def load_db(self, category='all'):
         """
         Method for connecting to database
         :return:
         """
-        self.connection = sqlite3.connect('titles.db')
-        self.title_list = self.connection.cursor().execute("""SELECT * FROM titles""").fetchall()
-        self.path_list = self.connection.cursor().execute("""SELECT * FROM pictures""").fetchall()
+        self.connection = sqlite3.connect('../titles.db')
+        if category == 'all':
+            self.title_list = self.connection.cursor().execute("""SELECT * FROM titles""").fetchall()
+            self.path_list = self.connection.cursor().execute("""SELECT * FROM pictures""").fetchall()
+            return
+        self.title_list = self.connection.cursor().execute(
+            """SELECT * FROM titles where status = ?""", (category,)).fetchall()
+        self.path_list = self.connection.cursor().execute("""SELECT * FROM pictures where status = ?""",
+                                                          (category,)).fetchall()
 
     def input_window(self):
         """
@@ -244,10 +261,7 @@ class Main(QMainWindow, UiMainWindow):
         :return:
         """
         self.currect_size = [self.x(), self.y() + 30, self.width(), self.height()]
-        file = open('size1.txt', 'w')
-        new_size = ' '.join([str(i) for i in self.currect_size])
-        file.write(new_size)
-        file.close()
+        self.size = [int(i) for i in self.currect_size]
         self.win = InputWindow()
         self.win.show()
         self.hide()
@@ -270,7 +284,6 @@ class Main(QMainWindow, UiMainWindow):
         self.status = self.status_combo_box.currentText()
         choice = False
         checkboxes = [self.r1, self.r2, self.r3, self.r4, self.r5, self.r6, self.r7, self.r8, self.r9]
-        print(1)
         for but in checkboxes:
             if but.isChecked():
                 self.type = but.text()
@@ -301,7 +314,8 @@ class Main(QMainWindow, UiMainWindow):
         cur.execute("""INSERT INTO titles(title, status, type, progress, rating, comment) VALUES(?,?,?,?,?,?)""",
                     (self.title, self.status, self.type, self.progress, self.rating, self.comment))
         try:
-            cur.execute("""INSERT INTO pictures(title, path) VALUES(?,?)""", (self.title, self.putreduct))
+            cur.execute("""INSERT INTO pictures(title, path, status) VALUES(?,?)""",
+                        (self.title, self.redact_path, self.status))
         except:
             cur.execute("""INSERT INTO pictures(title,path) VALUES(?,?)""", (self.title, ''))
         self.connection.commit()
@@ -325,10 +339,3 @@ class InputWindow(Main, UiPlusWindow, UiMainWindow):
                 self.button_add.clicked.connect(self.saveReduct)
         except:
             self.button_add.clicked.connect(self.save_info)
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = Main()
-    ex.show()
-    sys.exit(app.exec())
