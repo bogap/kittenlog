@@ -1,8 +1,10 @@
 from PIL import Image
 from PyQt6 import QtGui
-from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton
+from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox
 from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit
 from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox, QStatusBar
+from PyQt6.uic.properties import QtWidgets
+
 from app.frontend.a1 import UiMainWindow
 from app.frontend.a2 import UiPlusWindow
 from PyQt6 import uic
@@ -17,7 +19,6 @@ class Main(QMainWindow, UiMainWindow):
     def __init__(self):
         super().__init__()
         self.size = [433, 124, 693, 614]
-        self.eq_btn = QPushButton(self)
         self.plus_btn = QPushButton(self)
         self.initialize()
         self.swimmingButtons()
@@ -52,25 +53,41 @@ class Main(QMainWindow, UiMainWindow):
         self.plus_btn.setText('+')
         self.plus_btn.setFixedSize(40, 40)
 
-        self.eq_btn.setStyleSheet("QPushButton{\n"
-                                  "    background-color: rgb(201, 164, 255);\n"
-                                  "    border-radius: 13px;\n"
-                                  "    margin: 7px;\n"
-                                  "}\n"
-                                  "QPushButton:hover{\n"
-                                  "    background-color: rgb(162, 0, 255);\n"
-                                  "}")
-        self.eq_btn.setText('=')
-        self.eq_btn.setFixedSize(60, 40)
+        self.filter_box = QComboBox(self)
+        self.filter_box.setFixedSize(70, 40)
+        self.filter_box.setStyleSheet("QComboBox{\n"
+                                      "    background-color: rgb(230, 208, 255);\n"
+                                      "    border-radius: 20px;\n"
+                                      "    width: 4px;\n"
+                                      "    height: 40px;\n"
+                                      "}\n"
+                                      "QComboBox:hover{\n"
+                                      "    background-color: rgb(157, 0, 255);\n"
+                                      "}")
+
+        self.filter_box.addItem("all")
+        self.filter_box.addItem("planned")
+        self.filter_box.addItem("progress")
+        self.filter_box.addItem("finished")
+
+        self.filter_box.view().pressed.connect(self.filter_by_category)
         self.container()
+
+    def filter_by_category(self, index):
+        item = self.filter_box.model().itemFromIndex(index)
+        self.load_db(item.text())
+        self.set_info()
+        self.swimmingButtons()
+        self.status_bar.show()
+        self.filter_box.setCurrentText(item.text())
 
     def container(self):
         self.status_bar = QStatusBar(self)
         self.status_bar.setStyleSheet('background-color:  rgba(0,0,0,0);')
         self.status_bar.move(10, 10)
         self.status_bar.addWidget(self.plus_btn)
-        self.status_bar.addWidget(self.eq_btn)
-        self.status_bar.setFixedSize(100, 40)
+        self.status_bar.addWidget(self.filter_box)
+        self.status_bar.setFixedSize(self.width(), 40)
 
     def set_info(self):
         """
@@ -96,7 +113,7 @@ class Main(QMainWindow, UiMainWindow):
                                         "    background-color: rgb(201, 164, 255);\n"
                                         "    border-radius: 10px;\n"
                                         "    padding: 5px;\n"
-                                        "    width: 90px;\n"
+                                        "    width: 100px;\n"
                                         "    height: 15px;\n"
                                         "}\n"
                                         "QPushButton:hover{\n"
@@ -106,7 +123,7 @@ class Main(QMainWindow, UiMainWindow):
                                         "    background-color: rgb(201, 164, 255);\n"
                                         "    border-radius: 10px;\n"
                                         "    padding: 5px;\n"
-                                        "    width: 90px;\n"
+                                        "    width: 100px;\n"
                                         "    height: 15px;\n"
                                         "}\n"
                                         "QPushButton:hover{\n"
@@ -220,14 +237,20 @@ class Main(QMainWindow, UiMainWindow):
                 self.load_db()
                 self.main_window()
 
-    def load_db(self):
+    def load_db(self, category='all'):
         """
         Method for connecting to database
         :return:
         """
         self.connection = sqlite3.connect('../titles.db')
-        self.title_list = self.connection.cursor().execute("""SELECT * FROM titles""").fetchall()
-        self.path_list = self.connection.cursor().execute("""SELECT * FROM pictures""").fetchall()
+        if category == 'all':
+            self.title_list = self.connection.cursor().execute("""SELECT * FROM titles""").fetchall()
+            self.path_list = self.connection.cursor().execute("""SELECT * FROM pictures""").fetchall()
+            return
+        self.title_list = self.connection.cursor().execute(
+            """SELECT * FROM titles where status = ?""", (category,)).fetchall()
+        self.path_list = self.connection.cursor().execute("""SELECT * FROM pictures where status = ?""",
+                                                          (category,)).fetchall()
 
     def input_window(self):
         """
@@ -288,7 +311,8 @@ class Main(QMainWindow, UiMainWindow):
         cur.execute("""INSERT INTO titles(title, status, type, progress, rating, comment) VALUES(?,?,?,?,?,?)""",
                     (self.title, self.status, self.type, self.progress, self.rating, self.comment))
         try:
-            cur.execute("""INSERT INTO pictures(title, path) VALUES(?,?)""", (self.title, self.putreduct))
+            cur.execute("""INSERT INTO pictures(title, path, status) VALUES(?,?)""",
+                        (self.title, self.redact_path, self.status))
         except:
             cur.execute("""INSERT INTO pictures(title,path) VALUES(?,?)""", (self.title, ''))
         self.connection.commit()
