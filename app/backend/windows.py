@@ -13,8 +13,8 @@ import sqlite3
 
 class Main(QMainWindow, UiMainWindow):
     """
-        Main window
-        """
+    Main window
+    """
 
     def __init__(self):
         super().__init__()
@@ -26,7 +26,8 @@ class Main(QMainWindow, UiMainWindow):
     def initialize(self):
         """
         Method for initialization
-        :return:
+
+        :return: None
         """
         super().__init__()
         self.setupUi(self)
@@ -39,7 +40,8 @@ class Main(QMainWindow, UiMainWindow):
     def swimmingButtons(self):
         """
         Method for swimming add_media and filter_media buttons
-        :return:
+
+        :return: None
         """
         self.plus_btn.clicked.connect(self.input_window)
         self.plus_btn.setStyleSheet("QPushButton{\n"
@@ -92,7 +94,8 @@ class Main(QMainWindow, UiMainWindow):
     def set_info(self):
         """
         Method for setting list of media
-        :return:
+
+        :return: None
         """
         scr = QScrollArea(self)
         scr.setWidgetResizable(True)

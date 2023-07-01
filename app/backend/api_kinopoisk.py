@@ -4,7 +4,7 @@ from dotenv import dotenv_values
 
 class Kinopoisk:
     def __init__(self):
-        self.env_variables = dotenv_values("../.env")
+        self.env_variables = dotenv_values(".env")
         self.kinopoisk = KP(token=self.env_variables["KINOPOISK_API_KEY"])
 
     def search(self, keyword):
