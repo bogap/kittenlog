@@ -1,14 +1,19 @@
+import PyQt6
 from PIL import Image
 from PyQt6 import QtGui
-from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox
+from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QBoxLayout, \
+    QHBoxLayout
 from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit
 from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox, QStatusBar
 from PyQt6.uic.properties import QtWidgets
-
+from PyQt6 import QtCore
+from app.backend.api_kinopoisk import Kinopoisk
 from app.frontend.a1 import UiMainWindow
 from app.frontend.a2 import UiPlusWindow
+from app.frontend.a4 import UiSearchWindow
 from PyQt6 import uic
 import sqlite3
+from app.backend import *
 
 
 class Main(QMainWindow, UiMainWindow):
@@ -64,7 +69,7 @@ class Main(QMainWindow, UiMainWindow):
                                       "    height: 40px;\n"
                                       "}\n"
                                       "QComboBox:hover{\n"
-                                      "    background-color: rgb(157, 0, 255);\n"
+                                      "    background-color: rgb(255, 255, 255);\n"
                                       "}")
 
         self.filter_box.addItem("all")
@@ -73,6 +78,32 @@ class Main(QMainWindow, UiMainWindow):
         self.filter_box.addItem("finished")
 
         self.filter_box.view().pressed.connect(self.filter_by_category)
+
+        self.search_media = QTextEdit(self)
+        self.search_media.setFixedSize(300, 30)
+        self.search_media.setStyleSheet("QTextEdit{\n"
+                                        "    background-color: rgb(230, 208, 255);\n"
+                                        "    border-radius: 15px;\n"
+                                        "    width: 400px;\n"
+                                        "    height: 30px;\n"
+                                        "}\n"
+                                        "QTextEdit:hover{\n"
+                                        "    background-color: rgb(255, 255, 255);\n"
+                                        "}")
+
+        self.search_btn = QPushButton(self);
+        self.search_btn.clicked.connect(self.search_item)
+        self.search_btn.setStyleSheet("QPushButton{\n"
+                                      "    background-color: rgb(201, 164, 255);\n"
+                                      "    border-radius: 15px;\n"
+                                      "    margin: 7px;\n"
+                                      "}\n"
+                                      "QPushButton:hover{\n"
+                                      "    background-color: rgb(162, 0, 255);\n"
+                                      "}")
+        self.search_btn.setIcon(QtGui.QIcon('imgs/search'))
+        self.search_btn.setFixedSize(45, 45)
+
         self.container()
 
     def filter_by_category(self, index):
@@ -80,16 +111,76 @@ class Main(QMainWindow, UiMainWindow):
         self.load_db(item.text())
         self.set_info()
         self.swimmingButtons()
-        self.status_bar.show()
+        self.tool_bar.show()
         self.filter_box.setCurrentText(item.text())
 
+    def search_item(self):
+        item = str(self.search_media.toPlainText())
+        kinop = Kinopoisk()
+        keywords = item
+        self.set_search_info(kinop.search(keywords))
+        # self.win = SearchWindow()
+        # self.win.show()
+        # self.hide()
+
     def container(self):
-        self.status_bar = QStatusBar(self)
-        self.status_bar.setStyleSheet('background-color:  rgba(0,0,0,0);')
-        self.status_bar.move(10, 10)
-        self.status_bar.addWidget(self.plus_btn)
-        self.status_bar.addWidget(self.filter_box)
-        self.status_bar.setFixedSize(self.width(), 40)
+        self.tool_bar = QToolBar(self)
+        self.tool_bar.setStyleSheet('background-color:  rgba(0,0,0,0);')
+        self.tool_bar.move(10, 0)
+        self.tool_bar.addWidget(self.plus_btn)
+        self.tool_bar.addWidget(self.filter_box)
+        self.tool_bar.addSeparator()
+        self.tool_bar.addWidget(self.search_media)
+        self.tool_bar.addWidget(self.search_btn)
+        self.tool_bar.setFixedSize(self.width(), 50)
+
+    def set_search_info(self, list_of_search_results_dict):
+        self.centralwidget = QWidget()
+        self.gridLayout = QGridLayout(self.centralwidget)
+        self.scrollArea = QScrollArea(self.centralwidget)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollAreaWidgetContents = QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 1062, 502))
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.scrollArea.setStyleSheet('background-color:  rgba(255,255,255,255);')
+        self.gridLayout.addWidget(self.scrollArea, 0, 0, 1, 1)
+        self.verticalScrollBar = QScrollBar(self.centralwidget)
+        self.verticalScrollBar.setOrientation(QtCore.Qt.Orientation.Vertical)
+        self.gridLayout.addWidget(self.verticalScrollBar, 0, 1, 1, 1)
+        self.setCentralWidget(self.centralwidget)
+        self.add_button_list = {i: QPushButton(self.scrollAreaWidgetContents) for i in range(len(self.title_list))}
+        i = 0
+        self.verticalLayoutWidget = QWidget(self.scrollAreaWidgetContents)
+        self.verticalLayout = QHBoxLayout(self.verticalLayoutWidget)
+        self.horizontalLayoutWidget = QWidget(self.verticalLayoutWidget)
+        for item in list_of_search_results_dict:
+            self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
+            title = str(item['Название'])
+            rating = str(item['Оценка'])
+            year = str(item['Год выпуска'])
+            countries = str(item['Страны'])
+            genres = str(item['Жанры'])
+            text = str(
+                'title:' + title + '\nrating:' + rating + '\nyear:' + year + '\ncountries:' + countries
+                + '\ngenres:' + genres)
+            img_button = QPushButton(self.scrollAreaWidgetContents)
+            item_info = QTextEdit(self.scrollAreaWidgetContents)
+            item_info.setText(text)
+            self.horizontalLayout.addWidget(item_info)
+            self.horizontalLayout.addSpacing(10)
+            self.horizontalLayout.addWidget(img_button)
+            self.verticalLayout.addWidget(self.horizontalLayoutWidget)
+            add_to_plans = self.add_button_list[i]
+            add_to_plans.setStyleSheet("QPushButton{\n"
+                                       "    background-color: rgb(201, 164, 255);\n"
+                                       "    border-radius: 10px;\n"
+                                       "    padding: 5px;\n"
+                                       "    width: 100px;\n"
+                                       "    height: 15px;\n"
+                                       "}\n"
+                                       "QPushButton:hover{\n"
+                                       "    background-color: rgb(157, 0, 255);\n"
+                                       "}")
 
     def set_info(self):
         """
@@ -319,6 +410,16 @@ class Main(QMainWindow, UiMainWindow):
         except:
             cur.execute("""INSERT INTO pictures(title,path) VALUES(?,?)""", (self.title, ''))
         self.connection.commit()
+
+
+class SearchWindow(Main, UiSearchWindow, UiMainWindow):
+    """
+    Search window class
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
 
 
 class InputWindow(Main, UiPlusWindow, UiMainWindow):
