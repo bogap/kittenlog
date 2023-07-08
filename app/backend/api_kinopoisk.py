@@ -1,5 +1,4 @@
 from KinoPoiskAPI.kinopoisk_api import KP
-from dotenv import dotenv_values
 
 
 class Kinopoisk:

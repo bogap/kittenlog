@@ -1,14 +1,18 @@
+import sqlite3
+
+from AnilistPython import Anilist
 from PIL import Image
+from PyQt6 import QtCore
 from PyQt6 import QtGui
-from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QHBoxLayout
+from PyQt6 import uic
 from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit
 from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox
-from PyQt6 import QtCore
+from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QHBoxLayout
+
 from app.backend.api_kinopoisk import Kinopoisk
+from app.backend.google_books import get_book
 from app.frontend.a1 import UiMainWindow
 from app.frontend.a2 import UiPlusWindow
-from PyQt6 import uic
-import sqlite3
 
 
 class MainWindow(QMainWindow, UiMainWindow):
@@ -158,9 +162,48 @@ class MainWindow(QMainWindow, UiMainWindow):
         :return: None
         """
         item = str(self.search_media.toPlainText())
+
         kinop = Kinopoisk()
-        keywords = item
-        self.set_search_info(kinop.search(keywords))
+        ani = Anilist()
+
+        keys_to_remove_anime = (
+            "name_romaji", "ending_time", "banner_image", "airing_format",
+            "airing_status", "airing_episodes", "season", "next_airing_ep",
+            "is_adult", "popularity", "duration", "updated_at", "source",
+        )
+        try:
+            anime = ani.get_anime(item)
+            for key in keys_to_remove_anime:
+                anime.pop(key, None)
+        except IndexError:
+            anime = []
+
+        keys_to_remove_manga = (
+            "name_romaji", "ending_time", "banner_image", "release_format",
+            "release_status", "chapters", "volumes", "mean_score",
+        )
+        try:
+            manga = ani.get_manga(item)
+            for key in keys_to_remove_manga:
+                manga.pop(key, None)
+        except IndexError:
+            manga = []
+
+        keys_to_remove_books = (
+            "subtitle", "authors", "publisher", "page_count",
+            "print_type", "categories", "preview_link",
+        )
+        books = get_book(item)
+        for book in books:
+            for key in keys_to_remove_books:
+                book.pop(key, None)
+
+        results = kinop.search(item)
+        results.extend(anime)
+        results.extend(manga)
+        results.extend(books)
+
+        self.set_search_info(results)
 
     def container(self):
         """

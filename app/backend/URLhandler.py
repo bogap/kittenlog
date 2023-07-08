@@ -1,5 +1,6 @@
-from PyQt5 import Qt
 from urllib import request
+
+from PyQt5 import Qt
 
 
 class URLView(Qt.QWidget):
