@@ -1,19 +1,14 @@
-import PyQt6
 from PIL import Image
 from PyQt6 import QtGui
-from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QBoxLayout, \
-    QHBoxLayout
+from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QHBoxLayout
 from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit
-from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox, QStatusBar
-from PyQt6.uic.properties import QtWidgets
+from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox
 from PyQt6 import QtCore
 from app.backend.api_kinopoisk import Kinopoisk
 from app.frontend.a1 import UiMainWindow
 from app.frontend.a2 import UiPlusWindow
-from app.frontend.a4 import UiSearchWindow
 from PyQt6 import uic
 import sqlite3
-from app.backend import *
 
 
 class Main(QMainWindow, UiMainWindow):
@@ -410,16 +405,6 @@ class Main(QMainWindow, UiMainWindow):
         except:
             cur.execute("""INSERT INTO pictures(title,path) VALUES(?,?)""", (self.title, ''))
         self.connection.commit()
-
-
-class SearchWindow(Main, UiSearchWindow, UiMainWindow):
-    """
-    Search window class
-    """
-
-    def __init__(self):
-        super().__init__()
-        self.setupUi(self)
 
 
 class InputWindow(Main, UiPlusWindow, UiMainWindow):

@@ -1,19 +1,21 @@
 # Kitten Log
 
+KittenLog is a versatile desktop application designed to help users manage and organize their favorite media content in one convenient place. With KittenLog, users can effortlessly maintain lists of various media types, including movies, books, comics, mangas, and anime. 
 
-In this project we want to implement a windows application to store and modify lists of different types of media (books, movies, manga, etc). We will use the API for different purposes such as creating a list of recommendations or displaying trends. In this application, the user will be able to add media files to the log, track the progress of viewing or reading, rate and leave comments.
+The application serves as a unified platform, allowing users to store information about each media content. Users can easily add new items to their log, track their progress in viewing or reading, rate their experiences, and leave personal notes for future reference.
 
+KittenLog goes beyond simple storage by providing a seamless integration with the websites. Users can leverage the built-in search bar to retrieve additional information about movies, books, mangas, and animes directly within the application, eliminating the need to switch between different websites or apps.
 
-## Implemented features
-TODO
+Whether you're an avid movie enthusiast, bookworm, comic fan, or anime lover, KittenLog offers a user-friendly and comprehensive solution for managing your media collections and enhancing your overall experience. Stay organized, track your progress, and explore new content effortlessly with KittenLog. 
 
-## How to run?
-TODO
+## Installation
+Download KittenLog.exe file and run it.
 
-## Figma design
-TODO
+## Contact Information
+In case of some troubles with using an application or if you have some suggestions for improving an application, please contact us:
 
-## Technology stack
-* Python
-* FastAPI
-* TODO
+Alia Bogapova - a.bogapova@innopolis.university
+
+Ruslan Bakirov - r.bakirov@innopolis.university
+
+Milyausha Shamsutdinova - m.shamsutdinova@innopolis.university

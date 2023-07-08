@@ -5,7 +5,7 @@ from dotenv import dotenv_values
 class Kinopoisk:
     def __init__(self):
         self.env_variables = dotenv_values(".env")
-        self.kinopoisk = KP(token=self.env_variables["KINOPOISK_API_KEY"])
+        self.kinopoisk = KP(token='409e9761-5a60-444a-964a-98372b936ed0')
 
     def search(self, keyword):
         search = self.kinopoisk.search(keyword)
@@ -23,9 +23,3 @@ class Kinopoisk:
             list_of_movies.append(info)
         return list_of_movies
 
-
-# Пример использования
-
-kinop = Kinopoisk()
-keywords = input('>: ')
-print(kinop.search(keywords))
