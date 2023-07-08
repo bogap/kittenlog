@@ -194,14 +194,15 @@ class MainWindow(QMainWindow, UiMainWindow):
             "print_type", "categories", "preview_link",
         )
         books = get_book(item)
-        for book in books:
-            for key in keys_to_remove_books:
-                book.pop(key, None)
+        if books:
+            for book in books:
+                for key in keys_to_remove_books:
+                    book.pop(key, None)
 
         results = kinop.search(item)
-        results.extend(anime)
-        results.extend(manga)
-        results.extend(books)
+        # results.extend(anime)
+        # results.extend(manga)
+        # results.extend(books)
 
         self.set_search_info(results)
 
