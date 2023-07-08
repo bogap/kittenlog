@@ -1,27 +1,54 @@
-import PyQt6
 from PIL import Image
 from PyQt6 import QtGui
-from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QBoxLayout, \
-    QHBoxLayout
+from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QHBoxLayout
 from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit
-from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox, QStatusBar
-from PyQt6.uic.properties import QtWidgets
+from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox
 from PyQt6 import QtCore
 from app.backend.api_kinopoisk import Kinopoisk
 from app.frontend.a1 import UiMainWindow
 from app.frontend.a2 import UiPlusWindow
-from app.frontend.a4 import UiSearchWindow
 from PyQt6 import uic
 import sqlite3
-from app.backend import *
 
 
-class Main(QMainWindow, UiMainWindow):
+class MainWindow(QMainWindow, UiMainWindow):
     """
-    Main window
+    The Main class represents the main window of the application.
+
+    Attributes:
+        size (list): A list of integers representing the size of the main window.
+        plus_btn (QPushButton): A button for adding media items.
+        filter_box (QComboBox): A combo box for filtering media items by category.
+        search_media (QTextEdit): A text edit for entering search keywords.
+        search_btn (QPushButton): A button for initiating a search.
+        connection (sqlite3.Connection): A connection object for connecting to the database.
+
+    Methods:
+        initialize(): Initializes the main window.
+        swimmingButtons(): Sets up the buttons and UI elements for adding and filtering media items.
+        filter_by_category(index): Filters media items by the selected category.
+        search_item(): Initiates a search for media items based on the entered keyword.
+        container(): Sets up the toolbar and UI elements for the main window.
+        set_search_info(list_of_search_results_dict): Sets the search results in the UI.
+        set_info(): Sets up the UI with the list of media items.
+        remove_from_list(): Removes a media item from the list.
+        redact_list_item(): Allows editing a media item in the list.
+        save_redacted_item(): Saves the changes made to a media item.
+        choose_picture(): Allows selecting an image for a media item.
+        load_db(category='all'): Loads media items from the database.
+        input_window(): Opens the input window for adding a new media item.
+        main_window(): Opens the main window.
+        save_info(): Saves the information entered in the input window.
+        update_db(): Updates the database with the new media item.
+
     """
 
     def __init__(self):
+        """
+        Initializes a new instance of the Main class.
+
+        It sets the initial size of the main window, initializes UI elements, and connects signals to slots.
+        """
         super().__init__()
         self.size = [433, 124, 693, 614]
         self.plus_btn = QPushButton(self)
@@ -30,7 +57,9 @@ class Main(QMainWindow, UiMainWindow):
 
     def initialize(self):
         """
-        Method for initialization
+        Initializes the main window.
+
+        It sets up the UI, window size, window icon, and background color. It also loads the database and sets the initial information.
 
         :return: None
         """
@@ -44,7 +73,7 @@ class Main(QMainWindow, UiMainWindow):
 
     def swimmingButtons(self):
         """
-        Method for swimming add_media and filter_media buttons
+        Sets up the buttons and UI elements for adding and filtering media items.
 
         :return: None
         """
@@ -91,7 +120,7 @@ class Main(QMainWindow, UiMainWindow):
                                         "    background-color: rgb(255, 255, 255);\n"
                                         "}")
 
-        self.search_btn = QPushButton(self);
+        self.search_btn = QPushButton(self)
         self.search_btn.clicked.connect(self.search_item)
         self.search_btn.setStyleSheet("QPushButton{\n"
                                       "    background-color: rgb(201, 164, 255);\n"
@@ -107,6 +136,14 @@ class Main(QMainWindow, UiMainWindow):
         self.container()
 
     def filter_by_category(self, index):
+        """
+        Filters media items by the selected category.
+
+        Args:
+            index (QtCore.QModelIndex): The index of the selected category in the filter combo box.
+
+        :return: None
+        """
         item = self.filter_box.model().itemFromIndex(index)
         self.load_db(item.text())
         self.set_info()
@@ -115,15 +152,22 @@ class Main(QMainWindow, UiMainWindow):
         self.filter_box.setCurrentText(item.text())
 
     def search_item(self):
+        """
+        Initiates a search for media items based on the entered keyword.
+
+        :return: None
+        """
         item = str(self.search_media.toPlainText())
         kinop = Kinopoisk()
         keywords = item
         self.set_search_info(kinop.search(keywords))
-        # self.win = SearchWindow()
-        # self.win.show()
-        # self.hide()
 
     def container(self):
+        """
+        Sets up the toolbar and UI elements for the main window.
+
+        :return: None
+        """
         self.tool_bar = QToolBar(self)
         self.tool_bar.setStyleSheet('background-color:  rgba(0,0,0,0);')
         self.tool_bar.move(10, 0)
@@ -135,6 +179,20 @@ class Main(QMainWindow, UiMainWindow):
         self.tool_bar.setFixedSize(self.width(), 50)
 
     def set_search_info(self, list_of_search_results_dict):
+        """
+        Sets the search results in the UI.
+
+        Args:
+            list_of_search_results_dict (list): A list of dictionaries containing information about the search results.
+                                        Each dictionary should have the following keys:
+                                        - "Название" (str): The movie's title in Russian.
+                                        - "Оценка" (str): The movie's rating on Kinopoisk.
+                                        - "Год выпуска" (int): The year the movie was released.
+                                        - "Страны" (str): A comma-separated string of the movie's countries.
+                                        - "Жанры" (str): A comma-separated string of the movie's genres.
+
+        :return: None
+        """
         self.centralwidget = QWidget()
         self.gridLayout = QGridLayout(self.centralwidget)
         self.scrollArea = QScrollArea(self.centralwidget)
@@ -184,7 +242,7 @@ class Main(QMainWindow, UiMainWindow):
 
     def set_info(self):
         """
-        Method for setting list of media
+        Sets up the UI with the list of media items.
 
         :return: None
         """
@@ -260,8 +318,9 @@ class Main(QMainWindow, UiMainWindow):
 
     def remove_from_list(self):
         """
-        Method for removing from media list
-        :return:
+        Removes a media item from the list.
+
+        :return: None
         """
         remove_item_name = ""
         for k in self.remove_button_list.keys():
@@ -276,8 +335,9 @@ class Main(QMainWindow, UiMainWindow):
 
     def redact_list_item(self):
         """
-        Method for redacting media list items
-        :return:
+        Allows editing a media item in the list.
+
+        :return: None
         """
         uic.loadUi('frontend/a2.ui', self)
         for k in self.redact_button_list.keys():
@@ -288,8 +348,9 @@ class Main(QMainWindow, UiMainWindow):
 
     def save_redacted_item(self):
         """
-        Method for saving redacted media list item
-        :return:
+        Saves the changes made to a media item.
+
+        :return: None
         """
         self.title_input.setText(self.reductObj)
         media_type_array = [self.r1, self.r2, self.r3, self.r4, self.r5, self.r6, self.r7, self.r8, self.r9]
@@ -314,8 +375,9 @@ class Main(QMainWindow, UiMainWindow):
 
     def choose_picture(self):
         """
-        Method for choosing image of media list item
-        :return:
+        Allows selecting an image for a media item.
+
+        :return: None
         """
         for k in self.button_list.keys():
             if self.button_list[k] == self.sender():
@@ -333,8 +395,12 @@ class Main(QMainWindow, UiMainWindow):
 
     def load_db(self, category='all'):
         """
-        Method for connecting to database
-        :return:
+        Loads media items from the database.
+
+        Args:
+            category (str): The category to filter the media items by. Default is 'all' to load all items.
+
+        :return: None
         """
         self.connection = sqlite3.connect('../titles.db')
         if category == 'all':
@@ -348,8 +414,9 @@ class Main(QMainWindow, UiMainWindow):
 
     def input_window(self):
         """
-        Method for opening input_window
-        :return:
+        Opens the input window for adding a new media item.
+
+        :return: None
         """
         self.currect_size = [self.x(), self.y() + 30, self.width(), self.height()]
         self.size = [int(i) for i in self.currect_size]
@@ -359,17 +426,19 @@ class Main(QMainWindow, UiMainWindow):
 
     def main_window(self):
         """
-        Method foe opening main_window
-        :return:
+        Opens the main window.
+
+        :return: None
         """
-        self.win = Main()
+        self.win = MainWindow()
         self.win.show()
         self.hide()
 
     def save_info(self):
         """
-        Method for saving information from user's input
-        :return:
+        Saves the information entered in the input window.
+
+        :return: None
         """
         self.title = self.title_input.text()
         self.status = self.status_combo_box.currentText()
@@ -398,45 +467,49 @@ class Main(QMainWindow, UiMainWindow):
 
     def update_db(self):
         """
-        Updates database
-        :return:
+        Updates the database with the new media item.
+
+        :return: None
         """
         cur = self.connection.cursor()
-        cur.execute("""INSERT INTO titles(title, status, type, progress, rating, comment) VALUES(?,?,?,?,?,?)""",
+        cur.execute("""INSERT INTO titles(title, status, type, progress, rating, review)
+                        VALUES (?, ?, ?, ?, ?, ?)""",
                     (self.title, self.status, self.type, self.progress, self.rating, self.comment))
-        try:
-            cur.execute("""INSERT INTO pictures(title, path, status) VALUES(?,?)""",
-                        (self.title, self.redact_path, self.status))
-        except:
-            cur.execute("""INSERT INTO pictures(title,path) VALUES(?,?)""", (self.title, ''))
+        cur.execute("""INSERT INTO pictures(title, path)
+                        VALUES (?, ?)""", (self.title, self.redact_path))
         self.connection.commit()
+        self.load_db()
 
 
-class SearchWindow(Main, UiSearchWindow, UiMainWindow):
+class InputWindow(MainWindow, UiPlusWindow, UiMainWindow):
     """
-    Search window class
-    """
+    This class represents an input window that combines the functionality of the Main, UiPlusWindow,
+    and UiMainWindow classes.
 
-    def __init__(self):
-        super().__init__()
-        self.setupUi(self)
+    Attributes:
+        Inherits attributes from Main, UiPlusWindow, and UiMainWindow classes.
 
-
-class InputWindow(Main, UiPlusWindow, UiMainWindow):
-    """
-    Input window class
+    Methods:
+        __init__(): Initializes the InputWindow object.
     """
 
     def __init__(self):
-        super().__init__()
-        self.setupUi(self)
-        self.rating_spin_box.setMaximum(10)
+        """
+        Initializes an instance of the InputWindow class.
+
+        It sets up the user interface, including the maximum value for the rating_spin_box.
+        It also connects the appropriate button click events to their corresponding functions.
+        If an exception occurs while connecting the button events, it falls back to a default function.
+        """
+        super().__init__()  # Initialize the inherited classes
+        self.setupUi(self)  # Set up the user interface
+        self.rating_spin_box.setMaximum(10)  # Set the maximum value for the rating_spin_box
         try:
             if self.sender().text() == '+':
                 self.back_button.clicked.connect(self.main_window)
                 self.button_add.clicked.connect(self.save_info)
-
             else:
                 self.button_add.clicked.connect(self.saveReduct)
         except:
             self.button_add.clicked.connect(self.save_info)
+

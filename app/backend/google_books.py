@@ -7,8 +7,9 @@ API_KEY = "AIzaSyDBAFxQBMQ1Kovq62NpmGhW0mIuJSP0hH4"
 
 class Book:
     """
-    Class for google books api.
+    Represents a book with various attributes.
     """
+
     def __init__(
             self,
             title: str,
@@ -25,6 +26,23 @@ class Book:
             preview_link: str | None,
             canonical_link: str | None,
     ):
+        """
+        Initialize a Book object with the provided attributes.
+
+        :param title: The title of the book.
+        :param subtitle: The subtitle of the book (optional).
+        :param authors: A list of authors of the book.
+        :param publisher: The publisher of the book (optional).
+        :param published_date: The published date of the book (optional).
+        :param page_count: The number of pages in the book (optional).
+        :param print_type: The print type of the book (optional).
+        :param categories: A list of categories or genres the book belongs to (optional).
+        :param image_link_thumbnail: The URL of the book's thumbnail image (optional).
+        :param language: The language of the book (optional).
+        :param description: The description or summary of the book (optional).
+        :param preview_link: The URL for previewing the book (optional).
+        :param canonical_link: The canonical URL of the book (optional).
+        """
         self.title = title
         self.subtitle = subtitle
         self.authors = authors
@@ -40,30 +58,43 @@ class Book:
         self.canonical_link = canonical_link
 
     def get_title(self) -> str:
+        """
+        Get the title of the book.
+
+        :return: The title of the book.
+        """
         return self.title
 
     def get_authors(self) -> list[str]:
+        """
+        Get the list of authors of the book.
+
+        :return: A list of authors of the book.
+        """
         return self.authors
 
     def __len__(self) -> int:
         """
-        Override len function.
-        :return: number of pages.
+        Override the len() function to get the number of pages in the book.
+
+        :return: The number of pages in the book.
         """
         return self.page_count
 
 
 def get_book(request: str) -> list[Book] | None:
     """
-    Get list of books by request.
-    :param request: str request for google books api.
-    :return: list of books class.
+    Get a list of books based on the provided request using the Google Books API.
+
+    :param request: The request string for the Google Books API.
+    :return: A list of Book objects representing the books.
+             Returns None if there was an error or no books were found.
     """
     books = []
     try:
         response = get(f"https://www.googleapis.com/books/v1/volumes?q={request}&key={API_KEY}")
     except RequestException as e:
-        print("Что-то поломалосб у гугла ඞ\n", e)
+        print("An error occurred while making the request to Google Books API:\n", e)
         return None
     json_obj = json.loads(response.content)
     book_instances_json = json_obj["items"]
