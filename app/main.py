@@ -1,11 +1,9 @@
-import sys
-
 from PyQt6.QtWidgets import QApplication
-
-from app.backend.windows import MainWindow
+import sys
+from app.backend.windows import Main
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = MainWindow()
+    ex = Main()
     ex.show()
     sys.exit(app.exec())
