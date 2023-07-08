@@ -1,14 +1,18 @@
+import sqlite3
+
+from AnilistPython import Anilist
 from PIL import Image
+from PyQt6 import QtCore
 from PyQt6 import QtGui
-from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QHBoxLayout
+from PyQt6 import uic
 from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit
 from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox
-from PyQt6 import QtCore
+from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QHBoxLayout
+
 from app.backend.api_kinopoisk import Kinopoisk
+from app.backend.google_books import get_book
 from app.frontend.a1 import UiMainWindow
 from app.frontend.a2 import UiPlusWindow
-from PyQt6 import uic
-import sqlite3
 
 
 class MainWindow(QMainWindow, UiMainWindow):

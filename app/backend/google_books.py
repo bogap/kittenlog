@@ -1,6 +1,7 @@
+import json
+
 from requests import get
 from requests.exceptions import RequestException
-import json
 
 API_KEY = "AIzaSyDBAFxQBMQ1Kovq62NpmGhW0mIuJSP0hH4"
 
@@ -73,6 +74,28 @@ class Book:
         """
         return self.authors
 
+    def to_dict(self) -> dict[str, str | list[str] | int | None]:
+        """
+        Convert the Book object to a dict.
+
+        :return: A dictionary of parameters of a book.
+        """
+        return {
+            "title": self.title,
+            "subtitle": self.subtitle,
+            "authors": self.authors,
+            "publisher": self.publisher,
+            "published_date": self.published_date,
+            "page_count": self.page_count,
+            "print_type": self.print_type,
+            "categories": self.categories,
+            "image_link_thumbnail": self.image_link_thumbnail,
+            "language": self.language,
+            "description": self.description,
+            "preview_link": self.preview_link,
+            "canonical_link": self.canonical_link
+        }
+
     def __len__(self) -> int:
         """
         Override the len() function to get the number of pages in the book.
@@ -82,12 +105,12 @@ class Book:
         return self.page_count
 
 
-def get_book(request: str) -> list[Book] | None:
+def get_book(request: str) -> list[dict[str, str | list[str] | int | None]] | None:
     """
     Get a list of books based on the provided request using the Google Books API.
 
     :param request: The request string for the Google Books API.
-    :return: A list of Book objects representing the books.
+    :return: A list of dicts representing the books.
              Returns None if there was an error or no books were found.
     """
     books = []
@@ -98,27 +121,30 @@ def get_book(request: str) -> list[Book] | None:
         return None
     json_obj = json.loads(response.content)
     book_instances_json = json_obj["items"]
+    k = 0
     for book_instance_json in book_instances_json:
-        book_instance_volume_info = book_instance_json.get("volumeInfo", {})
+        if k >= 5:
+            k += 1
+            book_instance_volume_info = book_instance_json.get("volumeInfo", {})
 
-        title = book_instance_volume_info.get("title")
-        subtitle = book_instance_volume_info.get("subtitle")
-        authors = book_instance_volume_info.get("authors", [])
-        publisher = book_instance_volume_info.get("publisher")
-        published_date = book_instance_volume_info.get("publishedDate")
-        page_count = book_instance_volume_info.get("pageCount")
-        print_type = book_instance_volume_info.get("printType")
-        categories = book_instance_volume_info.get("categories")
-        image_links_dict = book_instance_volume_info.get("imageLinks", {})
-        image_link_thumbnail = image_links_dict.get("thumbnail")
-        language = book_instance_volume_info.get("language")
-        description = book_instance_volume_info.get("description")
-        preview_link = book_instance_volume_info.get("previewLink")
-        canonical_link = book_instance_volume_info.get("canonicalVolumeLink")
+            title = book_instance_volume_info.get("title")
+            subtitle = book_instance_volume_info.get("subtitle")
+            authors = book_instance_volume_info.get("authors", [])
+            publisher = book_instance_volume_info.get("publisher")
+            published_date = book_instance_volume_info.get("publishedDate")
+            page_count = book_instance_volume_info.get("pageCount")
+            print_type = book_instance_volume_info.get("printType")
+            categories = book_instance_volume_info.get("categories")
+            image_links_dict = book_instance_volume_info.get("imageLinks", {})
+            image_link_thumbnail = image_links_dict.get("thumbnail")
+            language = book_instance_volume_info.get("language")
+            description = book_instance_volume_info.get("description")
+            preview_link = book_instance_volume_info.get("previewLink")
+            canonical_link = book_instance_volume_info.get("canonicalVolumeLink")
 
-        book = Book(title, subtitle, authors, publisher, published_date, page_count, print_type, categories,
-                    image_link_thumbnail, language, description, preview_link, canonical_link)
-        books.append(book)
+            book = Book(title, subtitle, authors, publisher, published_date, page_count, print_type, categories,
+                        image_link_thumbnail, language, description, preview_link, canonical_link)
+            books.append(book.to_dict())
     if not books:
         return None
     return books
