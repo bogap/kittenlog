@@ -14,6 +14,7 @@ from app.backend.api_kinopoisk import Kinopoisk
 from app.backend.google_books import get_book
 from app.frontend.a1 import UiMainWindow
 from app.frontend.a2 import UiPlusWindow
+from app.frontend.a3 import UiAddFromSearchWindow
 
 
 class MainWindow(QMainWindow, UiMainWindow):
@@ -153,7 +154,7 @@ class MainWindow(QMainWindow, UiMainWindow):
         self.load_db(item.text())
         self.set_info()
         self.swimmingButtons()
-        self.tool_bar.show()
+
         self.filter_box.setCurrentText(item.text())
 
     def search_item(self):
@@ -252,6 +253,7 @@ class MainWindow(QMainWindow, UiMainWindow):
         self.tool_bar.addWidget(self.search_media)
         self.tool_bar.addWidget(self.search_btn)
         self.tool_bar.setFixedSize(self.width(), 50)
+        self.addToolBar(self.tool_bar)
 
     def set_search_info(self, list_of_search_results_dict):
         """
@@ -313,6 +315,7 @@ class MainWindow(QMainWindow, UiMainWindow):
 
         :return: None
         """
+        self.removeToolBar(self.tool_bar)
         self.centralwidget = QWidget()
         self.gridLayout = QGridLayout(self.centralwidget)
         self.scrollArea = QScrollArea(self.centralwidget)
@@ -324,6 +327,12 @@ class MainWindow(QMainWindow, UiMainWindow):
         self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.gridLayout.addWidget(self.scrollArea, 0, 0, 1, 1)
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
+
+        self.scrollArea.setStyleSheet(
+            "background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, "
+            "stop:0 rgba(234, 203, 239, 50), stop:0.52 rgba(0, 0, 0, 0), stop:0.565 rgba(82, 121, 76, 33), "
+            "stop:0.65 rgba(159, 235, 148, 50), stop:0.721925 rgba(255, 238, 150, 50), "
+            "stop:0.77 rgba(255, 128, 128, 50), stop:0.89 rgba(191, 128, 255, 50), stop:1 rgba(241, 231, 255, 255));")
 
         for item in list_of_search_results_dict:
             horizontalLayoutWidget = QWidget(self.scrollAreaWidgetContents)
@@ -343,17 +352,37 @@ class MainWindow(QMainWindow, UiMainWindow):
                 else:
                     text += str(key) + ": " + str(value) + "\n"
 
-            img_button = QPushButton(self.scrollAreaWidgetContents)
+            add_button = QPushButton(self.scrollAreaWidgetContents)
+            add_button.setText("add to list")
+            add_button.setStyleSheet("QPushButton{\n"
+                                     "    background-color: rgb(201, 164, 255);\n"
+                                     "    border-radius: 12px;\n"
+                                     "    padding: 5px;\n"
+                                     "    width: 70px;\n"
+                                     "    height: 15px;\n"
+                                     "}\n"
+                                     "QPushButton:hover{\n"
+                                     "    background-color: rgb(157, 0, 255);\n"
+                                     "}")
             item_info = QTextEdit(self.scrollAreaWidgetContents)
             # TODO: make expanding of an item widget
             item_info.setFixedHeight(200)
             item_info.setText(text)
-
+            item_info.setStyleSheet('background-color: rgb(241, 231, 255);');
             horizontalLayout.addWidget(item_info)
             horizontalLayout.addSpacing(10)
-            horizontalLayout.addWidget(img_button)
+            horizontalLayout.addWidget(add_button)
             self.verticalLayout.addWidget(horizontalLayoutWidget)
             self.verticalLayout.addStretch()
+            print(item)
+            try:
+                self.title = str(item['Название'])
+                self.type = "film"
+            except:
+                self.title = "nazvaniye"
+                self.type = "book"
+            AddFromSearchWindow.set_title_type(self, self.title, self.type)
+            add_button.clicked.connect(self.add_media_from_search_window)
         self.setCentralWidget(self.centralwidget)
 
     def set_info(self):
@@ -455,6 +484,7 @@ class MainWindow(QMainWindow, UiMainWindow):
 
         :return: None
         """
+        self.removeToolBar(self.tool_bar)
         uic.loadUi('frontend/a2.ui', self)
         for k in self.redact_button_list.keys():
             if self.redact_button_list[k] == self.sender():
@@ -534,9 +564,21 @@ class MainWindow(QMainWindow, UiMainWindow):
 
         :return: None
         """
-        self.currect_size = [self.x(), self.y() + 30, self.width(), self.height()]
+        self.currect_size = [self.x(), self.y(), self.width(), self.height()]
         self.size = [int(i) for i in self.currect_size]
         self.win = InputWindow()
+        self.win.show()
+        self.hide()
+
+    def add_media_from_search_window(self):
+        """
+        Opens the window for adding a new media item from search.
+
+        :return: None
+        """
+        self.currect_size = [self.x(), self.y(), self.width(), self.height()]
+        self.size = [int(i) for i in self.currect_size]
+        self.win = AddFromSearchWindow()
         self.win.show()
         self.hide()
 
@@ -556,6 +598,8 @@ class MainWindow(QMainWindow, UiMainWindow):
 
         :return: None
         """
+
+        print(self.__class__)
         self.title = self.title_input.text()
         self.status = self.status_combo_box.currentText()
         choice = False
@@ -581,20 +625,36 @@ class MainWindow(QMainWindow, UiMainWindow):
             self.update_db()
         self.main_window()
 
-    def update_db(self):
+    def save_from_search_info(self):
         """
-        Updates the database with the new media item.
+        Saves the information entered in the input window.
 
         :return: None
         """
+        self.status = self.status_box.currentText()
+        self.message = 'progress'
+        self.rating = self.rating_spin_box.text()
+        self.comment = self.comment_input.toPlainText()
+
+        self.progress, ok_pressed = QInputDialog.getText(self, "progress", self.message)
+        if ok_pressed:
+            self.update_db()
+        self.main_window()
+
+    def update_db(self):
+        """
+        Updates database
+        :return:
+        """
         cur = self.connection.cursor()
-        cur.execute("""INSERT INTO titles(title, status, type, progress, rating, review)
-                        VALUES (?, ?, ?, ?, ?, ?)""",
+        cur.execute("""INSERT INTO titles(title, status, type, progress, rating, review) VALUES(?,?,?,?,?,?)""",
                     (self.title, self.status, self.type, self.progress, self.rating, self.comment))
-        cur.execute("""INSERT INTO pictures(title, path)
-                        VALUES (?, ?)""", (self.title, self.redact_path))
+        try:
+            cur.execute("""INSERT INTO pictures(title, path, status) VALUES(?,?)""",
+                        (self.title, self.redact_path, self.status))
+        except:
+            cur.execute("""INSERT INTO pictures(title,path) VALUES(?,?)""", (self.title, ''))
         self.connection.commit()
-        self.load_db()
 
 
 class InputWindow(MainWindow, UiPlusWindow, UiMainWindow):
@@ -620,6 +680,7 @@ class InputWindow(MainWindow, UiPlusWindow, UiMainWindow):
         super().__init__()  # Initialize the inherited classes
         self.setupUi(self)  # Set up the user interface
         self.rating_spin_box.setMaximum(10)  # Set the maximum value for the rating_spin_box
+        self.removeToolBar(self.tool_bar)
         try:
             if self.sender().text() == '+':
                 self.back_button.clicked.connect(self.main_window)
@@ -628,3 +689,22 @@ class InputWindow(MainWindow, UiPlusWindow, UiMainWindow):
                 self.button_add.clicked.connect(self.saveReduct)
         except:
             self.button_add.clicked.connect(self.save_info)
+
+
+class AddFromSearchWindow(MainWindow, UiAddFromSearchWindow, UiMainWindow):
+    def __init__(self):
+        super().__init__()  # Initialize the inherited classes
+        self.type = None
+        self.title = None
+        self.setupUi(self)  # Set up the user interface
+        self.rating_spin_box.setMaximum(10)  # Set the maximum value for the rating_spin_box
+        self.removeToolBar(self.tool_bar)
+        try:
+            # self.back_button.clicked.connect(self.main_window)
+            self.button_add.clicked.connect(self.save_from_search_info)
+        except:
+            self.button_add.clicked.connect(self.save_from_search_info)
+
+    def set_title_type(self, title, type):
+        self.title = title
+        self.type = type
