@@ -123,7 +123,7 @@ def get_book(request: str) -> list[dict[str, str | list[str] | int | None]] | No
     book_instances_json = json_obj["items"]
     k = 0
     for book_instance_json in book_instances_json:
-        if k >= 5:
+        if k <= 5:
             k += 1
             book_instance_volume_info = book_instance_json.get("volumeInfo", {})
 
