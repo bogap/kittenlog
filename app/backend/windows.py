@@ -265,6 +265,51 @@ class MainWindow(QMainWindow, UiMainWindow):
                                         - "Год выпуска" (int): The year the movie was released.
                                         - "Страны" (str): A comma-separated string of the movie's countries.
                                         - "Жанры" (str): A comma-separated string of the movie's genres.
+                                        Or:
+                                        - name_romaji (str): The manga's title in romaji.
+                                        - name_english (str): The manga's title in English.
+                                        - starting_time (str): The manga's starting time.
+                                        - ending_time (str): The manga's ending time.
+                                        - cover_image (str): The manga's poster image.
+                                        - banner_image (str): The manga's banner image.
+                                        - airing_format (str): The manga's airing format.
+                                        - airing_status (str): The manga's airing status.
+                                        - airing_episodes (str): The manga's airing episodes.
+                                        - season (str): The manga's season.
+                                        - desc (str): The manga's description.
+                                        - average_score (str): The manga's average score.
+                                        - genres (list): List of a genres of a manga.
+                                        - next_airing_ep (str): The manga's next airing episode.
+                                        Or:
+                                        - name_romaji (str): THe anime's title in romaji.
+                                        - name_english (str): The anime's title in English.
+                                        - starting_time (str): The anime's starting time.
+                                        - ending_time (str): The anime's ending time.
+                                        - cover_image (str): The anime's poster image.
+                                        - banner_image (str): The anime's banner image.
+                                        - release_format (str): The anime's release format.
+                                        - release_status (str): The anime's release status.
+                                        - chapters (str): The anime's chapters.
+                                        - volumes (str): The anime's volumes.
+                                        - desc (str): The anime's description.
+                                        - average_score (str): The anime's average score.
+                                        - mean_score (str): The anime's mean score.
+                                        - genres (list): List of a genres of a anime.
+                                        - next_airing_ep (str): The anime's next airing episode.
+                                        Or:
+                                        - title (str): The book's title.
+                                        - subtitle (str): The book's subtitle.
+                                        - authors (list): The list of book's authors.
+                                        - publisher (str): The book's publisher.
+                                        - published_date (str): The book's published date.
+                                        - page_count (int): The book's page count.
+                                        - print_type (str): The book's print type.
+                                        - categories (list): The list of book's categories.
+                                        - image_link_thumbnail (str): The book's thumbnail image.
+                                        - language (str): The book's language.
+                                        - description (str): The book's description.
+                                        - preview_link (str): The book's preview link.
+                                        - canonical_link (str): The book's canonical link.
 
         :return: None
         """
@@ -583,4 +628,3 @@ class InputWindow(MainWindow, UiPlusWindow, UiMainWindow):
                 self.button_add.clicked.connect(self.saveReduct)
         except:
             self.button_add.clicked.connect(self.save_info)
-
