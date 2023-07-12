@@ -5,7 +5,8 @@ from PIL import Image
 from PyQt6 import QtCore
 from PyQt6 import QtGui
 from PyQt6 import uic
-from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit, QVBoxLayout, QSizePolicy
 from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox
 from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QHBoxLayout
 
@@ -167,41 +168,72 @@ class MainWindow(QMainWindow, UiMainWindow):
         ani = Anilist()
 
         keys_to_remove_anime = (
-            "name_romaji", "ending_time", "banner_image", "airing_format",
-            "airing_status", "airing_episodes", "season", "next_airing_ep",
-            "is_adult", "popularity", "duration", "updated_at", "source",
+            "banner_image", "airing_format", "airing_status", "season",
+            "next_airing_ep", "is_adult", "popularity", "updated_at", "source",
         )
         try:
             anime = ani.get_anime(item)
             for key in keys_to_remove_anime:
                 anime.pop(key, None)
         except IndexError:
-            anime = []
+            anime = {}
 
         keys_to_remove_manga = (
-            "name_romaji", "ending_time", "banner_image", "release_format",
-            "release_status", "chapters", "volumes", "mean_score",
+            "banner_image", "release_format", "release_status",
+            "volumes", "mean_score", "synonyms"
         )
         try:
             manga = ani.get_manga(item)
             for key in keys_to_remove_manga:
                 manga.pop(key, None)
         except IndexError:
-            manga = []
+            manga = {}
 
         keys_to_remove_books = (
-            "subtitle", "authors", "publisher", "page_count",
-            "print_type", "categories", "preview_link",
+            "publisher", "print_type", "categories", "preview_link",
         )
         books = get_book(item)
-        for book in books:
-            for key in keys_to_remove_books:
-                book.pop(key, None)
+        if books:
+            for book in books:
+                for key in keys_to_remove_books:
+                    book.pop(key, None)
 
         results = kinop.search(item)
-        results.extend(anime)
-        results.extend(manga)
-        results.extend(books)
+        if anime:
+            anime_fixed = {}
+            for key, value in anime.items():
+                if value is None or value == []:
+                    continue
+                if isinstance(value, list):
+                    anime_fixed[key] = ", ".join(value)
+                else:
+                    anime_fixed[key] = value
+            results.extend([anime_fixed])
+
+        if manga:
+            manga_fixed = {}
+            for key, value in manga.items():
+                if value is None or value == []:
+                    continue
+                if isinstance(value, list):
+                    manga_fixed[key] = ", ".join(value)
+                else:
+                    manga_fixed[key] = value
+            results.extend([manga_fixed])
+
+        if books:
+            books_fixed = []
+            for book in books:
+                book_fixed = {}
+                for key, value in book.items():
+                    if value is None or value == []:
+                        continue
+                    if isinstance(value, list):
+                        book_fixed[key] = ", ".join(value)
+                    else:
+                        book_fixed[key] = value
+                books_fixed.append(book_fixed)
+            results.extend(books_fixed)
 
         self.set_search_info(results)
 
@@ -233,6 +265,51 @@ class MainWindow(QMainWindow, UiMainWindow):
                                         - "Год выпуска" (int): The year the movie was released.
                                         - "Страны" (str): A comma-separated string of the movie's countries.
                                         - "Жанры" (str): A comma-separated string of the movie's genres.
+                                        Or:
+                                        - name_romaji (str): The manga's title in romaji.
+                                        - name_english (str): The manga's title in English.
+                                        - starting_time (str): The manga's starting time.
+                                        - ending_time (str): The manga's ending time.
+                                        - cover_image (str): The manga's poster image.
+                                        - banner_image (str): The manga's banner image.
+                                        - airing_format (str): The manga's airing format.
+                                        - airing_status (str): The manga's airing status.
+                                        - airing_episodes (str): The manga's airing episodes.
+                                        - season (str): The manga's season.
+                                        - desc (str): The manga's description.
+                                        - average_score (str): The manga's average score.
+                                        - genres (list): List of a genres of a manga.
+                                        - next_airing_ep (str): The manga's next airing episode.
+                                        Or:
+                                        - name_romaji (str): THe anime's title in romaji.
+                                        - name_english (str): The anime's title in English.
+                                        - starting_time (str): The anime's starting time.
+                                        - ending_time (str): The anime's ending time.
+                                        - cover_image (str): The anime's poster image.
+                                        - banner_image (str): The anime's banner image.
+                                        - release_format (str): The anime's release format.
+                                        - release_status (str): The anime's release status.
+                                        - chapters (str): The anime's chapters.
+                                        - volumes (str): The anime's volumes.
+                                        - desc (str): The anime's description.
+                                        - average_score (str): The anime's average score.
+                                        - mean_score (str): The anime's mean score.
+                                        - genres (list): List of a genres of a anime.
+                                        - next_airing_ep (str): The anime's next airing episode.
+                                        Or:
+                                        - title (str): The book's title.
+                                        - subtitle (str): The book's subtitle.
+                                        - authors (list): The list of book's authors.
+                                        - publisher (str): The book's publisher.
+                                        - published_date (str): The book's published date.
+                                        - page_count (int): The book's page count.
+                                        - print_type (str): The book's print type.
+                                        - categories (list): The list of book's categories.
+                                        - image_link_thumbnail (str): The book's thumbnail image.
+                                        - language (str): The book's language.
+                                        - description (str): The book's description.
+                                        - preview_link (str): The book's preview link.
+                                        - canonical_link (str): The book's canonical link.
 
         :return: None
         """
@@ -244,44 +321,40 @@ class MainWindow(QMainWindow, UiMainWindow):
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 1062, 502))
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.scrollArea.setStyleSheet('background-color:  rgba(255,255,255,255);')
+        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.gridLayout.addWidget(self.scrollArea, 0, 0, 1, 1)
-        self.verticalScrollBar = QScrollBar(self.centralwidget)
-        self.verticalScrollBar.setOrientation(QtCore.Qt.Orientation.Vertical)
-        self.gridLayout.addWidget(self.verticalScrollBar, 0, 1, 1, 1)
-        self.setCentralWidget(self.centralwidget)
-        self.add_button_list = {i: QPushButton(self.scrollAreaWidgetContents) for i in range(len(self.title_list))}
-        i = 0
-        self.verticalLayoutWidget = QWidget(self.scrollAreaWidgetContents)
-        self.verticalLayout = QHBoxLayout(self.verticalLayoutWidget)
-        self.horizontalLayoutWidget = QWidget(self.verticalLayoutWidget)
+        self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
+
         for item in list_of_search_results_dict:
-            self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
-            title = str(item['Название'])
-            rating = str(item['Оценка'])
-            year = str(item['Год выпуска'])
-            countries = str(item['Страны'])
-            genres = str(item['Жанры'])
-            text = str(
-                'title:' + title + '\nrating:' + rating + '\nyear:' + year + '\ncountries:' + countries
-                + '\ngenres:' + genres)
+            horizontalLayoutWidget = QWidget(self.scrollAreaWidgetContents)
+            horizontalLayout = QHBoxLayout(horizontalLayoutWidget)
+
+            text = ""
+            for key, value in item.items():
+                if key == "Ссылка на постер фильма":
+                    # TODO: do something with film img
+                    pass
+                elif key == "cover_image":
+                    # TODO: do something with manga and anime img
+                    pass
+                elif key == "image_link_thumbnail":
+                    # TODO: do something with books img
+                    pass
+                else:
+                    text += str(key) + ": " + str(value) + "\n"
+
             img_button = QPushButton(self.scrollAreaWidgetContents)
             item_info = QTextEdit(self.scrollAreaWidgetContents)
+            # TODO: make expanding of an item widget
+            item_info.setFixedHeight(200)
             item_info.setText(text)
-            self.horizontalLayout.addWidget(item_info)
-            self.horizontalLayout.addSpacing(10)
-            self.horizontalLayout.addWidget(img_button)
-            self.verticalLayout.addWidget(self.horizontalLayoutWidget)
-            add_to_plans = self.add_button_list[i]
-            add_to_plans.setStyleSheet("QPushButton{\n"
-                                       "    background-color: rgb(201, 164, 255);\n"
-                                       "    border-radius: 10px;\n"
-                                       "    padding: 5px;\n"
-                                       "    width: 100px;\n"
-                                       "    height: 15px;\n"
-                                       "}\n"
-                                       "QPushButton:hover{\n"
-                                       "    background-color: rgb(157, 0, 255);\n"
-                                       "}")
+
+            horizontalLayout.addWidget(item_info)
+            horizontalLayout.addSpacing(10)
+            horizontalLayout.addWidget(img_button)
+            self.verticalLayout.addWidget(horizontalLayoutWidget)
+            self.verticalLayout.addStretch()
+        self.setCentralWidget(self.centralwidget)
 
     def set_info(self):
         """
@@ -555,4 +628,3 @@ class InputWindow(MainWindow, UiPlusWindow, UiMainWindow):
                 self.button_add.clicked.connect(self.saveReduct)
         except:
             self.button_add.clicked.connect(self.save_info)
-

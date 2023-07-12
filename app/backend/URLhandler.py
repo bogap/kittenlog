@@ -1,9 +1,10 @@
 from urllib import request
 
-from PyQt5 import Qt
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QLabel, QApplication
 
 
-class URLView(Qt.QWidget):
+class URLView(QWidget):
     """
     URLView class represents a widget for displaying an image from a given URL.
 
@@ -22,12 +23,12 @@ class URLView(Qt.QWidget):
         """
 
         super().__init__(parent)
-        layout = Qt.QVBoxLayout(self)
+        layout = QVBoxLayout(self)
 
-        self.urlEdit = Qt.QLineEdit()
+        self.urlEdit = QLineEdit()
         self.urlEdit.setText(url)
 
-        self.imageLabel = Qt.QLabel()
+        self.imageLabel = QLabel()
         self.imageLabel.setScaledContents(True)
         layout.addWidget(self.imageLabel)
 
@@ -39,16 +40,16 @@ class URLView(Qt.QWidget):
         """
 
         data = request.urlopen(self.urlEdit.text()).read()
-        pixmap = Qt.QPixmap()
+        pixmap = QPixmap()
         pixmap.loadFromData(data)
         self.imageLabel.setPixmap(pixmap)
 
 
-if __name__ == '__main__':
-    app = Qt.QApplication([])
-
-    w = URLView("https://moodle.innopolis.university/pluginfile.php/1/theme_academi/logo/1686640507/logo.png")
-
-    w.show()
-
-    app.exec()
+# if __name__ == '__main__':
+#     app = QApplication([])
+#
+#     w = URLView("https://moodle.innopolis.university/pluginfile.php/1/theme_academi/logo/1686640507/logo.png")
+#
+#     w.show()
+#
+#     app.exec()
