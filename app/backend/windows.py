@@ -368,18 +368,31 @@ class MainWindow(QMainWindow, UiMainWindow):
             # TODO: make expanding of an item widget
             item_info.setFixedHeight(200)
             item_info.setText(text)
-            item_info.setStyleSheet('background-color: rgb(241, 231, 255);');
+            item_info.setStyleSheet('background-color: rgb(241, 231, 255);')
             horizontalLayout.addWidget(item_info)
             horizontalLayout.addSpacing(10)
             horizontalLayout.addWidget(add_button)
             self.verticalLayout.addWidget(horizontalLayoutWidget)
             self.verticalLayout.addStretch()
-            try:
-                Params.title = str(item['Название'])
-                Params.type = "film"
-            except:
-                self.title = "nazvaniye"
-                self.type = "book"
+            # try:
+            #     Params.title = str(item["Название"])
+            #     Params.type = "фильм"
+            # except:
+            #     self.title = "nazvaniye"
+            #     self.type = "book"
+            if item.get("Название") is not None:
+                Params.title = str(item["Название"])
+                Params.type = "фильм"
+            elif item.get("name_english") is not None:
+                if item.get("mean_score") is not None:
+                    Params.title = str(item["name_english"])
+                    Params.type = "аниме"
+                else:
+                    Params.title = str(item["name_english"])
+                    Params.type = "манга"
+            elif item.get("title") is not None:
+                Params.title = str(item["title"])
+                Params.type = "книга"
             add_button.clicked.connect(self.add_media_from_search_window)
         self.setCentralWidget(self.centralwidget)
 
@@ -630,7 +643,7 @@ class MainWindow(QMainWindow, UiMainWindow):
         :return: None
         """
         self.title = Params.title
-        self.type = Params.title
+        self.type = Params.type
         self.status = self.status_box.currentText()
         self.message = 'progress'
         self.rating = self.rating_spin_box.text()
