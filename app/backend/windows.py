@@ -374,14 +374,12 @@ class MainWindow(QMainWindow, UiMainWindow):
             horizontalLayout.addWidget(add_button)
             self.verticalLayout.addWidget(horizontalLayoutWidget)
             self.verticalLayout.addStretch()
-            print(item)
             try:
-                self.title = str(item['Название'])
-                self.type = "film"
+                Params.title = str(item['Название'])
+                Params.type = "film"
             except:
                 self.title = "nazvaniye"
                 self.type = "book"
-            AddFromSearchWindow.set_title_type(self, self.title, self.type)
             add_button.clicked.connect(self.add_media_from_search_window)
         self.setCentralWidget(self.centralwidget)
 
@@ -631,6 +629,8 @@ class MainWindow(QMainWindow, UiMainWindow):
 
         :return: None
         """
+        self.title = Params.title
+        self.type = Params.title
         self.status = self.status_box.currentText()
         self.message = 'progress'
         self.rating = self.rating_spin_box.text()
@@ -705,6 +705,7 @@ class AddFromSearchWindow(MainWindow, UiAddFromSearchWindow, UiMainWindow):
         except:
             self.button_add.clicked.connect(self.save_from_search_info)
 
-    def set_title_type(self, title, type):
-        self.title = title
-        self.type = type
+
+class Params:
+    title = ''
+    type = ''
