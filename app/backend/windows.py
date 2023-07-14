@@ -202,7 +202,7 @@ class MainWindow(QMainWindow, UiMainWindow):
             manga = {}
 
         keys_to_remove_books = (
-            "publisher", "print_type", "categories", "preview_link",
+            "publisher", "print_type", "categories", "preview_link", "canonical_link",
         )
         books = get_book(item)
         if books:
@@ -219,6 +219,8 @@ class MainWindow(QMainWindow, UiMainWindow):
                 if isinstance(value, list):
                     anime_fixed[key] = ", ".join(value)
                 else:
+                    if isinstance(value, str):
+                        value = value.replace("<br>", "")
                     anime_fixed[key] = value
             results.extend([anime_fixed])
 
@@ -230,6 +232,8 @@ class MainWindow(QMainWindow, UiMainWindow):
                 if isinstance(value, list):
                     manga_fixed[key] = ", ".join(value)
                 else:
+                    if isinstance(value, str):
+                        value = value.replace("<br>", "")
                     manga_fixed[key] = value
             results.extend([manga_fixed])
 
