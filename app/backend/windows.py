@@ -12,7 +12,7 @@ from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit, QVBoxLayou
 from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox
 from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QHBoxLayout
 from PyQt6.uic.properties import QtWidgets
-from matplotlib.image import imread
+# from matplotlib.image import imread
 
 from app.backend.api_kinopoisk import Kinopoisk
 from app.backend.google_books import get_book
