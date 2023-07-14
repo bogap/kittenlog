@@ -109,7 +109,7 @@ class MainWindow(QMainWindow, UiMainWindow):
 
         self.filter_box.addItem("all")
         self.filter_box.addItem("planned")
-        self.filter_box.addItem("progress")
+        self.filter_box.addItem("in progress")
         self.filter_box.addItem("finished")
 
         self.filter_box.view().pressed.connect(self.filter_by_category)
@@ -340,7 +340,7 @@ class MainWindow(QMainWindow, UiMainWindow):
 
             text = ""
             for key, value in item.items():
-                if key == "Ссылка на постер фильма":
+                if key == "link to poster":
                     # TODO: do something with film img
                     pass
                 elif key == "cover_image":
@@ -368,31 +368,20 @@ class MainWindow(QMainWindow, UiMainWindow):
             # TODO: make expanding of an item widget
             item_info.setFixedHeight(200)
             item_info.setText(text)
-            item_info.setStyleSheet('background-color: rgb(241, 231, 255);')
+            item_info.setStyleSheet('background-color: rgb(241, 231, 255);');
             horizontalLayout.addWidget(item_info)
             horizontalLayout.addSpacing(10)
             horizontalLayout.addWidget(add_button)
             self.verticalLayout.addWidget(horizontalLayoutWidget)
             self.verticalLayout.addStretch()
-            # try:
-            #     Params.title = str(item["Название"])
-            #     Params.type = "фильм"
-            # except:
-            #     self.title = "nazvaniye"
-            #     self.type = "book"
-            if item.get("Название") is not None:
-                Params.title = str(item["Название"])
-                Params.type = "фильм"
-            elif item.get("name_english") is not None:
-                if item.get("mean_score") is not None:
-                    Params.title = str(item["name_english"])
-                    Params.type = "аниме"
-                else:
-                    Params.title = str(item["name_english"])
-                    Params.type = "манга"
-            elif item.get("title") is not None:
-                Params.title = str(item["title"])
-                Params.type = "книга"
+            print(item)
+            try:
+                self.title = str(item['title'])
+                self.type = "film"
+            except:
+                self.title = "nazvaniye"
+                self.type = "book"
+            AddFromSearchWindow.set_title_type(self, self.title, self.type)
             add_button.clicked.connect(self.add_media_from_search_window)
         self.setCentralWidget(self.centralwidget)
 
@@ -438,7 +427,7 @@ class MainWindow(QMainWindow, UiMainWindow):
                                         "    background-color: rgb(157, 0, 255);\n"
                                         "}")
             picture_button.setFixedSize(225, 320)
-            redact_button.setText('redact')
+            redact_button.setText('edit')
             remove_button.setText('remove')
             title_list_copy = list([str(j) for j in self.title_list[i]])
             path_list_copy = list([str(j) for j in self.path_list[i]])
@@ -642,8 +631,6 @@ class MainWindow(QMainWindow, UiMainWindow):
 
         :return: None
         """
-        self.title = Params.title
-        self.type = Params.type
         self.status = self.status_box.currentText()
         self.message = 'progress'
         self.rating = self.rating_spin_box.text()
@@ -718,7 +705,6 @@ class AddFromSearchWindow(MainWindow, UiAddFromSearchWindow, UiMainWindow):
         except:
             self.button_add.clicked.connect(self.save_from_search_info)
 
-
-class Params:
-    title = ''
-    type = ''
+    def set_title_type(self, title, type):
+        self.title = title
+        self.type = type
