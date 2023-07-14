@@ -344,14 +344,11 @@ class MainWindow(QMainWindow, UiMainWindow):
             text = ""
             for key, value in item.items():
                 if key == "Ссылка на постер фильма":
-                    # TODO: do something with film img
-                    pass
+                    Params.url_list.append(value)
                 elif key == "cover_image":
-                    # TODO: do something with manga and anime img
-                    pass
+                    Params.url_list.append(value)
                 elif key == "image_link_thumbnail":
-                    # TODO: do something with books img
-                    pass
+                    Params.url_list.append(value)
                 else:
                     text += str(key) + ": " + str(value) + "\n"
 
@@ -734,4 +731,5 @@ class Params:
     title_list = []
     type_list = []
     add_button_list = []
+    url_list = []
     sender_index = 0
