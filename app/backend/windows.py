@@ -2,24 +2,24 @@ import sqlite3
 
 import requests
 from AnilistPython import Anilist
-from PIL import Image
 from PyQt6 import QtCore
 from PyQt6 import QtGui
 from PyQt6 import uic
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QPixmap, QIcon
-from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit, QVBoxLayout, QSizePolicy, QLabel
+from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit, QVBoxLayout
 from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox
+
 from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QHBoxLayout
 from PyQt6.uic.properties import QtWidgets
-# from matplotlib.image import imread
 
+
+from app.backend.URLhandler import URLView
 from app.backend.api_kinopoisk import Kinopoisk
 from app.backend.google_books import get_book
 from app.frontend.a1 import UiMainWindow
 from app.frontend.a2 import UiPlusWindow
 from app.frontend.a3 import UiAddFromSearchWindow
-from app.backend.URLhandler import URLView
 
 
 class MainWindow(QMainWindow, UiMainWindow):
