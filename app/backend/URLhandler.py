@@ -1,7 +1,7 @@
-from urllib import request
+import requests
 
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QLabel, QApplication
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QLabel
 
 
 class URLView(QWidget):
@@ -39,7 +39,7 @@ class URLView(QWidget):
         Loads the image data from the specified URL and sets it in the imageLabel widget.
         """
 
-        data = request.urlopen(self.urlEdit.text()).read()
+        data = requests.get(self.urlEdit.text()).content
         pixmap = QPixmap()
         pixmap.loadFromData(data)
         self.imageLabel.setPixmap(pixmap)
@@ -48,8 +48,10 @@ class URLView(QWidget):
 # if __name__ == '__main__':
 #     app = QApplication([])
 #
-#     w = URLView("https://moodle.innopolis.university/pluginfile.php/1/theme_academi/logo/1686640507/logo.png")
-#
+#     w = URLView("https://kinopoiskapiunofficial.tech/images/posters/kp_small/595937.jpg")
+#     # http://books.google.com/books/content?id=DdnIBgAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api
+#     # https://kinopoiskapiunofficial.tech/images/posters/kp/5297246.jpg
+#     # https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/23320.jpg
 #     w.show()
 #
 #     app.exec()
