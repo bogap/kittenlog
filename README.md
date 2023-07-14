@@ -14,8 +14,8 @@ Whether you're an avid movie enthusiast, bookworm, comic fan, or anime lover, Ki
 
 To install and run the Kitten Log, follow these steps:
 
-1. Download `KittenLog` folder
-2. Open folder `app` inside it
+1. Download `app` folder
+2. Open folder `KittenLog` inside it
 3. Run `KittenLog.exe`
 
 ## Contact Information
