@@ -52,7 +52,7 @@ class Kinopoisk:
                 "Страны": ", ".join(item.countries),
                 "Жанры": ", ".join(item.genres),
                 "Ссылка на фильм на кинопоиске": item.kp_url,
-                "Ссылка на постер фильма": item.poster
+                "Ссылка на постер фильма": item.poster_preview
             }
             list_of_movies.append(info)
         return list_of_movies
