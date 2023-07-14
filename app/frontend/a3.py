@@ -13,7 +13,6 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 
 class UiAddFromSearchWindow(object):
     def __init__(self):
-        self.back_button = None
         self.verticalLayout_2 = None
         self.horizontalLayout_3 = None
         self.gridLayout_2 = None
@@ -29,18 +28,6 @@ class UiAddFromSearchWindow(object):
         self.gridLayout_2 = QtWidgets.QGridLayout()
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
-        self.back_button = QtWidgets.QPushButton(self.central_widget)
-        self.back_button.setStyleSheet("QPushButton{\n"
-                                       "    background-color: rgb(230, 208, 255);\n"
-                                       "    border-radius: 15px;\n"
-                                       "    padding: 5px;\n"
-                                       "    width: 20px;\n"
-                                       "    height: 20px;\n"
-                                       "}\n"
-                                       "QPushButton:hover{\n"
-                                       "    background-color: rgb(157, 0, 255);\n"
-                                       "}")
-        self.horizontalLayout_3.addWidget(self.back_button)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding,
                                            QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem)
@@ -146,7 +133,6 @@ class UiAddFromSearchWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "add title"))
-        self.back_button.setText(_translate("MainWindow", "<-"))
         self.comment_text.setText(_translate("MainWindow", "comment: "))
         self.label.setText(_translate("MainWindow", "rating"))
         self.label_2.setText(_translate("MainWindow", "/10          "))
