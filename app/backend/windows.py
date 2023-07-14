@@ -13,7 +13,6 @@ from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox
 from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QHBoxLayout
 from PyQt6.uic.properties import QtWidgets
 
-
 from app.backend.URLhandler import URLView
 from app.backend.api_kinopoisk import Kinopoisk
 from app.backend.google_books import get_book
@@ -724,6 +723,10 @@ class MainWindow(QMainWindow, UiMainWindow):
             cur.execute("""INSERT INTO pictures(title, path, status) VALUES(?,)""",
                         (self.title,))
         self.connection.commit()
+        Params.add_button_list.clear()
+        Params.url_list.clear()
+        Params.title_list.clear()
+        Params.sender_index = None
 
 
 class InputWindow(MainWindow, UiPlusWindow, UiMainWindow):
@@ -770,7 +773,6 @@ class AddFromSearchWindow(MainWindow, UiAddFromSearchWindow, UiMainWindow):
         self.removeToolBar(self.tool_bar)
 
         try:
-            # self.back_button.clicked.connect(self.main_window)
             self.button_add.clicked.connect(self.save_from_search_info)
         except:
             self.button_add.clicked.connect(self.save_from_search_info)
