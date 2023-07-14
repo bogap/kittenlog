@@ -2,24 +2,23 @@ import sqlite3
 
 import requests
 from AnilistPython import Anilist
-from PIL import Image
 from PyQt6 import QtCore
 from PyQt6 import QtGui
 from PyQt6 import uic
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QPixmap, QIcon
-from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit, QVBoxLayout, QSizePolicy, QLabel
+from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit, QVBoxLayout
 from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox
+
 from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QHBoxLayout
 from PyQt6.uic.properties import QtWidgets
-# from matplotlib.image import imread
 
+from app.backend.URLhandler import URLView
 from app.backend.api_kinopoisk import Kinopoisk
 from app.backend.google_books import get_book
 from app.frontend.a1 import UiMainWindow
 from app.frontend.a2 import UiPlusWindow
 from app.frontend.a3 import UiAddFromSearchWindow
-from app.backend.URLhandler import URLView
 
 
 class MainWindow(QMainWindow, UiMainWindow):
@@ -202,7 +201,7 @@ class MainWindow(QMainWindow, UiMainWindow):
             manga = {}
 
         keys_to_remove_books = (
-            "publisher", "print_type", "categories", "preview_link",
+            "publisher", "print_type", "categories", "preview_link", "canonical_link",
         )
         books = get_book(item)
         if books:
@@ -219,6 +218,8 @@ class MainWindow(QMainWindow, UiMainWindow):
                 if isinstance(value, list):
                     anime_fixed[key] = ", ".join(value)
                 else:
+                    if isinstance(value, str):
+                        value = value.replace("<br>", "")
                     anime_fixed[key] = value
             results.extend([anime_fixed])
 
@@ -230,6 +231,8 @@ class MainWindow(QMainWindow, UiMainWindow):
                 if isinstance(value, list):
                     manga_fixed[key] = ", ".join(value)
                 else:
+                    if isinstance(value, str):
+                        value = value.replace("<br>", "")
                     manga_fixed[key] = value
             results.extend([manga_fixed])
 
@@ -411,6 +414,21 @@ class MainWindow(QMainWindow, UiMainWindow):
         Params.title_list = title_list
         Params.type_list = type_list
         self.setCentralWidget(self.centralwidget)
+        button_back = QPushButton()
+        button_back.setStyleSheet("QPushButton{\n"
+                                  "    background-color: rgb(201, 164, 255);\n"
+                                  "    border-radius: 13px;\n"
+                                  "    margin: 7px;\n"
+                                  "}\n"
+                                  "QPushButton:hover{\n"
+                                  "    background-color: rgb(162, 0, 255);\n"
+                                  "}")
+        button_back.setFixedSize(40, 40)
+        button_back.clicked.connect(self.main_window)
+        button_back.setText("<-")
+        toolbarWithBack = QToolBar()
+        toolbarWithBack.addWidget(button_back)
+        self.addToolBar(toolbarWithBack)
 
     def set_info(self):
         """
@@ -705,6 +723,10 @@ class MainWindow(QMainWindow, UiMainWindow):
             cur.execute("""INSERT INTO pictures(title, path, status) VALUES(?,)""",
                         (self.title,))
         self.connection.commit()
+        Params.add_button_list.clear()
+        Params.url_list.clear()
+        Params.title_list.clear()
+        Params.sender_index = None
 
 
 class InputWindow(MainWindow, UiPlusWindow, UiMainWindow):
@@ -749,8 +771,8 @@ class AddFromSearchWindow(MainWindow, UiAddFromSearchWindow, UiMainWindow):
         self.setupUi(self)  # Set up the user interface
         self.rating_spin_box.setMaximum(10)  # Set the maximum value for the rating_spin_box
         self.removeToolBar(self.tool_bar)
+
         try:
-            # self.back_button.clicked.connect(self.main_window)
             self.button_add.clicked.connect(self.save_from_search_info)
         except:
             self.button_add.clicked.connect(self.save_from_search_info)
