@@ -472,7 +472,7 @@ class MainWindow(QMainWindow, UiMainWindow):
                                         "    background-color: rgb(157, 0, 255);\n"
                                         "}")
             picture_button.setFixedSize(225, 320)
-            redact_button.setText('redact')
+            redact_button.setText('edit')
             remove_button.setText('remove')
             title_list_copy = list([str(j) for j in self.title_list[i]])
             path_list_copy = list([str(j) for j in self.path_list[i]])
