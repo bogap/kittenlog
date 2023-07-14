@@ -333,6 +333,9 @@ class MainWindow(QMainWindow, UiMainWindow):
             "stop:0 rgba(234, 203, 239, 50), stop:0.52 rgba(0, 0, 0, 0), stop:0.565 rgba(82, 121, 76, 33), "
             "stop:0.65 rgba(159, 235, 148, 50), stop:0.721925 rgba(255, 238, 150, 50), "
             "stop:0.77 rgba(255, 128, 128, 50), stop:0.89 rgba(191, 128, 255, 50), stop:1 rgba(241, 231, 255, 255));")
+        add_button_list = []
+        title_list = []
+        type_list = []
 
         for item in list_of_search_results_dict:
             horizontalLayoutWidget = QWidget(self.scrollAreaWidgetContents)
@@ -364,6 +367,7 @@ class MainWindow(QMainWindow, UiMainWindow):
                                      "QPushButton:hover{\n"
                                      "    background-color: rgb(157, 0, 255);\n"
                                      "}")
+            add_button_list += [add_button]
             item_info = QTextEdit(self.scrollAreaWidgetContents)
             # TODO: make expanding of an item widget
             item_info.setFixedHeight(200)
@@ -381,19 +385,22 @@ class MainWindow(QMainWindow, UiMainWindow):
             #     self.title = "nazvaniye"
             #     self.type = "book"
             if item.get("Название") is not None:
-                Params.title = str(item["Название"])
-                Params.type = "фильм"
+                title_list += [str(item["Название"])]
+                type_list += ["фильм"]
             elif item.get("name_english") is not None:
                 if item.get("mean_score") is not None:
-                    Params.title = str(item["name_english"])
-                    Params.type = "аниме"
+                    title_list += [str(item["name_english"])]
+                    type_list += ["аниме"]
                 else:
-                    Params.title = str(item["name_english"])
-                    Params.type = "манга"
+                    title_list += [str(item["name_english"])]
+                    type_list += ["манга"]
             elif item.get("title") is not None:
-                Params.title = str(item["title"])
-                Params.type = "книга"
+                title_list += [str(item["title"])]
+                type_list += ["книга"]
             add_button.clicked.connect(self.add_media_from_search_window)
+        Params.add_button_list = add_button_list
+        Params.title_list = title_list
+        Params.type_list = type_list
         self.setCentralWidget(self.centralwidget)
 
     def set_info(self):
@@ -587,6 +594,9 @@ class MainWindow(QMainWindow, UiMainWindow):
 
         :return: None
         """
+        for k in range(len(Params.add_button_list)):
+            if Params.add_button_list[k] == self.sender():
+                Params.sender_index = k
         self.currect_size = [self.x(), self.y(), self.width(), self.height()]
         self.size = [int(i) for i in self.currect_size]
         self.win = AddFromSearchWindow()
@@ -610,7 +620,6 @@ class MainWindow(QMainWindow, UiMainWindow):
         :return: None
         """
 
-        print(self.__class__)
         self.title = self.title_input.text()
         self.status = self.status_combo_box.currentText()
         choice = False
@@ -642,8 +651,10 @@ class MainWindow(QMainWindow, UiMainWindow):
 
         :return: None
         """
-        self.title = Params.title
-        self.type = Params.type
+
+        self.title = Params.title_list[Params.sender_index]
+        self.type = Params.type_list[Params.sender_index]
+
         self.status = self.status_box.currentText()
         self.message = 'progress'
         self.rating = self.rating_spin_box.text()
@@ -720,5 +731,7 @@ class AddFromSearchWindow(MainWindow, UiAddFromSearchWindow, UiMainWindow):
 
 
 class Params:
-    title = ''
-    type = ''
+    title_list = []
+    type_list = []
+    add_button_list = []
+    sender_index = 0
