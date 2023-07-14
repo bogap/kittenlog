@@ -9,7 +9,12 @@ KittenLog goes beyond simple storage by providing a seamless integration with th
 Whether you're an avid movie enthusiast, bookworm, comic fan, or anime lover, KittenLog offers a user-friendly and comprehensive solution for managing your media collections and enhancing your overall experience. Stay organized, track your progress, and explore new content effortlessly with KittenLog. 
 
 ## Installation
-Download KittenLog.exe file and run it.
+
+To install and run the AI Assistant, follow these steps:
+
+1. Download folder KittenLog
+2. Open it
+3. Run main.exe.
 
 ## Contact Information
 In case of some troubles with using an application or if you have some suggestions for improving an application, please contact us:
