@@ -411,6 +411,21 @@ class MainWindow(QMainWindow, UiMainWindow):
         Params.title_list = title_list
         Params.type_list = type_list
         self.setCentralWidget(self.centralwidget)
+        button_back = QPushButton()
+        button_back.setStyleSheet("QPushButton{\n"
+                                  "    background-color: rgb(201, 164, 255);\n"
+                                  "    border-radius: 13px;\n"
+                                  "    margin: 7px;\n"
+                                  "}\n"
+                                  "QPushButton:hover{\n"
+                                  "    background-color: rgb(162, 0, 255);\n"
+                                  "}")
+        button_back.setFixedSize(40, 40)
+        button_back.clicked.connect(self.main_window)
+        button_back.setText("<-")
+        toolbarWithBack = QToolBar()
+        toolbarWithBack.addWidget(button_back)
+        self.addToolBar(toolbarWithBack)
 
     def set_info(self):
         """
@@ -749,6 +764,7 @@ class AddFromSearchWindow(MainWindow, UiAddFromSearchWindow, UiMainWindow):
         self.setupUi(self)  # Set up the user interface
         self.rating_spin_box.setMaximum(10)  # Set the maximum value for the rating_spin_box
         self.removeToolBar(self.tool_bar)
+
         try:
             # self.back_button.clicked.connect(self.main_window)
             self.button_add.clicked.connect(self.save_from_search_info)
