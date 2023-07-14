@@ -155,10 +155,16 @@ class MainWindow(QMainWindow, UiMainWindow):
 
         :return: None
         """
+        self.removeToolBar(self.tool_bar)
         item = self.filter_box.model().itemFromIndex(index)
         self.load_db(item.text())
         self.set_info()
         self.swimmingButtons()
+        self.setStyleSheet(
+            "background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, "
+            "stop:0 rgba(234, 203, 239, 100), stop:0.52 rgba(255, 255, 255, 255), stop:0.565 rgba(82, 121, 76, 100), "
+            "stop:0.65 rgba(159, 235, 148, 100), stop:0.721925 rgba(255, 238, 150, 100), "
+            "stop:0.77 rgba(255, 128, 128, 100), stop:0.89 rgba(191, 128, 255, 100), stop:1 rgba(241, 231, 255, 255));")
 
         self.filter_box.setCurrentText(item.text())
 
