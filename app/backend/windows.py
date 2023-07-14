@@ -9,7 +9,10 @@ from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QPixmap, QIcon
 from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit, QVBoxLayout
 from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox
-from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QHBoxLayout
+
+from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QHBoxLayout
+from PyQt6.uic.properties import QtWidgets
+
 
 from app.backend.URLhandler import URLView
 from app.backend.api_kinopoisk import Kinopoisk
