@@ -43,7 +43,7 @@ class URLView(QWidget):
         pixmap = QPixmap()
         pixmap.loadFromData(data)
         self.imageLabel.setPixmap(pixmap)
-
+        self.imageLabel.setFixedSize(225, 320)
 
 # if __name__ == '__main__':
 #     app = QApplication([])

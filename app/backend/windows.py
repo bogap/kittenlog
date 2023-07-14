@@ -1,20 +1,25 @@
 import sqlite3
 
+import requests
 from AnilistPython import Anilist
 from PIL import Image
 from PyQt6 import QtCore
 from PyQt6 import QtGui
 from PyQt6 import uic
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit, QVBoxLayout, QSizePolicy
+from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtGui import QPixmap, QIcon
+from PyQt6.QtWidgets import QGridLayout, QScrollArea, QPlainTextEdit, QVBoxLayout, QSizePolicy, QLabel
 from PyQt6.QtWidgets import QInputDialog, QFileDialog, QMessageBox
 from PyQt6.QtWidgets import QWidget, QMainWindow, QPushButton, QComboBox, QToolBar, QTextEdit, QScrollBar, QHBoxLayout
+from PyQt6.uic.properties import QtWidgets
+from matplotlib.image import imread
 
 from app.backend.api_kinopoisk import Kinopoisk
 from app.backend.google_books import get_book
 from app.frontend.a1 import UiMainWindow
 from app.frontend.a2 import UiPlusWindow
 from app.frontend.a3 import UiAddFromSearchWindow
+from app.backend.URLhandler import URLView
 
 
 class MainWindow(QMainWindow, UiMainWindow):
@@ -364,23 +369,24 @@ class MainWindow(QMainWindow, UiMainWindow):
                                      "QPushButton:hover{\n"
                                      "    background-color: rgb(157, 0, 255);\n"
                                      "}")
+
             add_button_list += [add_button]
             item_info = QTextEdit(self.scrollAreaWidgetContents)
-            # TODO: make expanding of an item widget
-            item_info.setFixedHeight(200)
             item_info.setText(text)
             item_info.setStyleSheet('background-color: rgb(241, 231, 255);')
+            try:
+                image = URLView(Params.url_list[-1])
+
+                horizontalLayout.addWidget(image)
+            except:
+                pass
+
+            horizontalLayout.addSpacing(10)
             horizontalLayout.addWidget(item_info)
             horizontalLayout.addSpacing(10)
             horizontalLayout.addWidget(add_button)
             self.verticalLayout.addWidget(horizontalLayoutWidget)
             self.verticalLayout.addStretch()
-            # try:
-            #     Params.title = str(item["Название"])
-            #     Params.type = "фильм"
-            # except:
-            #     self.title = "nazvaniye"
-            #     self.type = "book"
             if item.get("Название") is not None:
                 title_list += [str(item["Название"])]
                 type_list += ["фильм"]
@@ -447,10 +453,24 @@ class MainWindow(QMainWindow, UiMainWindow):
             title_list_copy = list([str(j) for j in self.title_list[i]])
             path_list_copy = list([str(j) for j in self.path_list[i]])
             if path_list_copy[1] != '':
-                image = Image.open(path_list_copy[1])
-                image = image.resize((225, 320))
-                image.save(path_list_copy[1])
-                picture_button.setStyleSheet(f'background-image : url({path_list_copy[1]});')
+                if "https" not in path_list_copy[1]:
+                    image = QIcon()
+                    pixmap = QPixmap(path_list_copy[1])
+                    image.addPixmap(pixmap)
+                    picture_button.setIcon(image)
+                    picture_button.setIconSize(QSize(225, 320))
+                else:
+                    image = QIcon()
+                    try:
+                        data = requests.get(path_list_copy[1]).content
+                        pixmap = QPixmap()
+                        pixmap.loadFromData(data)
+                        image.addPixmap(pixmap)
+                        picture_button.setIcon(image)
+                        picture_button.setIconSize(QSize(225, 320))
+                    except Exception:
+                        picture_button.setStyleSheet(f'background-image : url(imgs/umol.jpg);')
+
             else:
                 picture_button.setStyleSheet(f'background-image : url(imgs/umol.jpg);')
             picture_button.clicked.connect(self.choose_picture)
@@ -651,6 +671,8 @@ class MainWindow(QMainWindow, UiMainWindow):
 
         self.title = Params.title_list[Params.sender_index]
         self.type = Params.type_list[Params.sender_index]
+        self.redact_path = Params.url_list[Params.sender_index]
+        print(self.redact_path)
 
         self.status = self.status_box.currentText()
         self.message = 'progress'
@@ -671,10 +693,11 @@ class MainWindow(QMainWindow, UiMainWindow):
         cur.execute("""INSERT INTO titles(title, status, type, progress, rating, review) VALUES(?,?,?,?,?,?)""",
                     (self.title, self.status, self.type, self.progress, self.rating, self.comment))
         try:
-            cur.execute("""INSERT INTO pictures(title, path, status) VALUES(?,?)""",
+            cur.execute("""INSERT INTO pictures(title, path, status) VALUES(?,?,?)""",
                         (self.title, self.redact_path, self.status))
         except:
-            cur.execute("""INSERT INTO pictures(title,path) VALUES(?,?)""", (self.title, ''))
+            cur.execute("""INSERT INTO pictures(title, path, status) VALUES(?,)""",
+                        (self.title,))
         self.connection.commit()
 
 
