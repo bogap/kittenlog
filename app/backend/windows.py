@@ -719,8 +719,7 @@ class MainWindow(QMainWindow, UiMainWindow):
             cur.execute("""INSERT INTO pictures(title, path, status) VALUES(?,?,?)""",
                         (self.title, self.redact_path, self.status))
         except:
-            cur.execute("""INSERT INTO pictures(title, path, status) VALUES(?,)""",
-                        (self.title,))
+            cur.execute("""INSERT INTO pictures(title,path) VALUES(?,?)""", (self.title, ''))
         self.connection.commit()
         Params.add_button_list.clear()
         Params.url_list.clear()
