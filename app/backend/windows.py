@@ -696,7 +696,6 @@ class MainWindow(QMainWindow, UiMainWindow):
         self.title = Params.title_list[Params.sender_index]
         self.type = Params.type_list[Params.sender_index]
         self.redact_path = Params.url_list[Params.sender_index]
-        print(self.redact_path)
 
         self.status = self.status_box.currentText()
         self.message = 'progress'
