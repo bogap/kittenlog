@@ -44,14 +44,3 @@ class URLView(QWidget):
         pixmap.loadFromData(data)
         self.imageLabel.setPixmap(pixmap)
         self.imageLabel.setFixedSize(225, 320)
-
-# if __name__ == '__main__':
-#     app = QApplication([])
-#
-#     w = URLView("https://kinopoiskapiunofficial.tech/images/posters/kp_small/595937.jpg")
-#     # http://books.google.com/books/content?id=DdnIBgAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api
-#     # https://kinopoiskapiunofficial.tech/images/posters/kp/5297246.jpg
-#     # https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/23320.jpg
-#     w.show()
-#
-#     app.exec()
